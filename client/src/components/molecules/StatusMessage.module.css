@@ -1,0 +1,19 @@
+.muted { color: var(--color-muted); padding: var(--space-lg) 0; }
+
+.error {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md);
+  justify-content: space-between;
+  background: var(--color-error-bg);
+  border: 2px solid var(--color-error-line);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.empty {
+  display: grid; justify-items: center; gap: var(--space-sm); text-align: center;
+  padding: var(--space-xl) var(--space-md);
+  border: var(--stitch);
+  border-radius: var(--radius-lg);
+  color: var(--color-muted);
+}

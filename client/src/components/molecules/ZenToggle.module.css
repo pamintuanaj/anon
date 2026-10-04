@@ -1,0 +1,30 @@
+.toggle {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  background: none; border: none; padding: 0.25rem; cursor: pointer;
+  font-weight: 600; color: var(--color-text);
+  border-radius: var(--radius-md);
+}
+
+.track {
+  position: relative;
+  width: 3.6rem; height: 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-line);
+  box-shadow: inset 0 2px 6px rgba(74, 68, 69, 0.08);
+  transition: background 400ms ease;
+}
+
+.knob {
+  position: absolute; top: 0.2rem; left: 0.2rem;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  display: grid; place-items: center; font-size: 0.85rem;
+  background: var(--color-surface);
+  box-shadow: 0 3px 8px rgba(74, 68, 69, 0.18);
+  /* The overshoot in this curve gives the knob a little springy bounce */
+  transition: transform 450ms cubic-bezier(.5, 1.6, .4, 1);
+}
+
+.on .track { background: linear-gradient(90deg, var(--color-strawberry), var(--color-mint-base)); }
+.on .knob { transform: translateX(1.6rem) rotate(360deg); }
+
+.toggle:hover .knob { box-shadow: 0 4px 12px rgba(232, 143, 164, 0.45); }

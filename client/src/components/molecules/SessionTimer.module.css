@@ -1,0 +1,9 @@
+.card {
+  background: var(--tile-butter);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: grid; gap: var(--space-sm); justify-items: start;
+}
+.title { font-size: var(--text-md); }
+.time { font-family: var(--font-count); font-weight: 700; font-size: var(--text-xxl); line-height: 1; }
+.buttons { display: flex; gap: var(--space-sm); flex-wrap: wrap; }

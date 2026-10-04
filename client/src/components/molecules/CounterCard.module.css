@@ -1,0 +1,27 @@
+.card {
+  --c: var(--color-accent);
+  background: var(--color-surface); border-radius: var(--radius-lg);
+  padding: var(--space-md); box-shadow: var(--shadow-soft);
+  border-top: 5px solid var(--c);
+  display: grid; gap: var(--space-sm);
+}
+.head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-sm); }
+.name { font-size: var(--text-md); overflow-wrap: anywhere; }
+.badges { display: flex; align-items: center; gap: var(--space-xs); }
+.badge { font-size: 0.72rem; font-weight: 600; background: var(--color-bg); padding: 0.1rem 0.5rem; border-radius: var(--radius-pill); white-space: nowrap; }
+.edit { border: none; background: none; cursor: pointer; font-size: 1.3rem; color: var(--color-muted); padding: 0 0.3rem; border-radius: var(--radius-sm); }
+.body { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); }
+.round {
+  width: 2.6rem; height: 2.6rem; border-radius: 50%; border: none; cursor: pointer;
+  font-size: 1.4rem; font-weight: 600; line-height: 1;
+  background: var(--color-bg); color: var(--color-link);
+}
+.plus { background: var(--color-primary-strong); color: var(--color-on-strong); }
+.round:disabled { opacity: 0.45; cursor: default; }
+.ring { position: relative; width: 4.4rem; height: 4.4rem; display: grid; place-items: center; }
+.ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.track { fill: none; stroke: var(--color-bg); stroke-width: 6; }
+.fill { fill: none; stroke: var(--c); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 300ms ease; }
+.value { position: relative; font-size: 1.6rem; font-weight: 700; }
+.hint { font-size: 0.78rem; color: var(--color-muted); text-align: center; }
+.value { animation: roll 300ms var(--ease-spring); }

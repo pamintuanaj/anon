@@ -1,0 +1,11 @@
+.wrap { position: relative; flex: 1; min-width: 12rem; }
+.input { padding: 0.75rem 3.4rem 0.75rem 1.2rem; border-radius: var(--radius-pill); border-color: transparent; box-shadow: var(--shadow-soft); }
+/* The round pink search button from the reference kit, decorative here
+   because the list filters as you type. */
+.icon {
+  position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%);
+  width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--color-primary); color: var(--color-on-strong);
+  pointer-events: none;
+}

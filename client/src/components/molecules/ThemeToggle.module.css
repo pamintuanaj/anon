@@ -1,0 +1,12 @@
+.toggle {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  border: none; cursor: pointer; font-weight: 600;
+  background: var(--color-bg); color: var(--color-text);
+  padding: 0.6rem 1rem; border-radius: var(--radius-md); justify-content: flex-start;
+  transition: background 200ms ease;
+}
+.icon { display: inline-grid; place-items: center; transition: transform 500ms cubic-bezier(.5, 1.6, .4, 1); }
+.dark { transform: rotate(-30deg); }
+.toggle:hover { background: var(--color-primary-soft); }
+.block { width: 100%; }
+.compactBtn { padding: 0.55rem; border-radius: 50%; background: var(--color-surface); box-shadow: var(--shadow-soft); }

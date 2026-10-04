@@ -1,0 +1,36 @@
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-soft);
+  display: grid; gap: var(--space-md);
+  align-content: space-between;
+}
+.out { background: var(--color-muted-surface); }
+.top { display: flex; gap: var(--space-sm); align-items: flex-start; }
+.text { min-width: 0; }
+.text h3 { overflow-wrap: anywhere; }
+
+/* A ball of yarn: the colour plus wound lines */
+.ball {
+  flex: none; width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  border: 3px solid var(--color-surface);
+  box-shadow: 0 0 0 1.5px var(--color-line);
+  background-image: repeating-linear-gradient(35deg, rgba(74,59,60,0.25) 0 2px, transparent 2px 7px);
+  background-blend-mode: multiply;
+}
+.icon { flex: none; font-size: 2rem; line-height: 1; }
+.meta { font-size: var(--text-sm); color: var(--color-muted); }
+
+.bottom { display: flex; justify-content: space-between; align-items: center; gap: var(--space-sm); }
+.qty { display: flex; align-items: center; gap: var(--space-sm); }
+.number { font-weight: 700; font-size: var(--text-lg); min-width: 2.2rem; text-align: center; }
+
+/* Low-stock warning: a butter-yellow badge and outline */
+.low { box-shadow: 0 0 0 2.5px var(--tile-butter), var(--shadow-soft); }
+.badge {
+  display: inline-block; margin-bottom: 0.2rem;
+  background: var(--tile-butter); color: var(--color-text);
+  font-size: 0.72rem; font-weight: 700; padding: 0.1rem 0.6rem; border-radius: var(--radius-pill);
+}
+.badgeOut { background: var(--color-primary-soft); }

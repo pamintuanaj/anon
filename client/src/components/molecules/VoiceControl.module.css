@@ -1,0 +1,10 @@
+.wrap { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; justify-content: flex-end; }
+.mic {
+  display: inline-flex; align-items: center; gap: 0.35rem; font-size: var(--text-sm);
+  border: none; cursor: pointer; font-weight: 600; color: var(--color-text);
+  background: var(--color-surface); box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-md); padding: 0.4rem 0.8rem;
+}
+.on { background: var(--color-primary-strong); color: var(--color-on-strong); animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(232, 143, 164, 0.25); } }
+.heard { font-size: var(--text-sm); color: var(--color-muted); }

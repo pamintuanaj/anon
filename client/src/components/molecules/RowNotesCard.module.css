@@ -1,0 +1,9 @@
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-soft);
+  display: grid; gap: var(--space-sm);
+}
+.title { font-size: var(--text-md); }
+.area { resize: vertical; border-style: dashed; }

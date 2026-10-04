@@ -1,0 +1,20 @@
+.layer { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+.pieces { position: absolute; inset: 0; overflow: hidden; }
+.piece {
+  position: absolute; top: -12px; width: 10px; height: 14px;
+  animation-name: fall; animation-timing-function: cubic-bezier(.3,.6,.5,1); animation-fill-mode: forwards;
+}
+@keyframes fall {
+  from { transform: translateY(0) rotate(var(--r)); opacity: 1; }
+  to { transform: translateY(105vh) rotate(calc(var(--r) + 540deg)); opacity: 0.9; }
+}
+.toast {
+  position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
+  background: var(--color-surface); color: var(--color-primary-deep);
+  font-weight: 700; font-size: var(--text-lg);
+  padding: var(--space-md) var(--space-lg); border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-press); white-space: nowrap;
+  animation: pop 320ms ease-out;
+}
+@keyframes pop { from { transform: translateX(-50%) scale(0.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pieces { display: none; } }
