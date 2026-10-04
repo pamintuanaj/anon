@@ -1,0 +1,83 @@
+.wrap { display: grid; justify-items: center; gap: var(--space-md); }
+
+.ball {
+  width: min(15rem, 70vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: grid; place-content: center; justify-items: center;
+  color: var(--color-text);
+  background:
+    radial-gradient(ellipse 14% 9% at 24% 20%, rgba(255,255,255,0.7) 0 98%, transparent 100%),
+    repeating-linear-gradient(35deg, rgba(255,255,255,0.22) 0 3px, transparent 3px 12px),
+    var(--color-primary);
+  box-shadow: 0 8px 0 var(--color-primary-strong), 0 22px 40px rgba(194, 69, 106, 0.30);
+  transition: transform 90ms ease, box-shadow 90ms ease;
+  touch-action: manipulation;
+}
+.ball:active:not(:disabled) { transform: translateY(8px); box-shadow: 0 2px 0 var(--color-link); }
+.ball:disabled { cursor: default; background-color: var(--color-accent); }
+
+.number {
+  font-family: var(--font-count);
+  font-size: clamp(3.5rem, 12vw, 5rem);
+  line-height: 1;
+  background: var(--color-surface);
+  color: var(--color-primary-strong);
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  padding: 0.1rem 1.1rem;
+}
+.hint { margin-top: var(--space-sm); font-weight: 600; color: #fff; }
+
+.undo {
+  background: none; border: none; cursor: pointer;
+  color: var(--color-link); font-weight: 600; text-decoration: underline;
+}
+.undo:disabled { color: var(--color-muted); text-decoration: none; cursor: default; }
+
+/* ---- Milestone hearts ----------------------------------------------------
+   The burst sits exactly on top of the ball. Each piece starts in the centre
+   and flies out along its own angle: rotate() points it in a direction,
+   translateY(-distance) pushes it outward along that direction, and the second
+   rotate() turns the symbol back upright so the hearts are not sideways. */
+.ballWrap { position: relative; display: grid; place-items: center; }
+.burst { position: absolute; inset: 0; pointer-events: none; display: grid; place-items: center; }
+.piece {
+  position: absolute;
+  font-size: 2.1rem;
+  color: var(--color-primary-strong);
+  /* a white halo so pink hearts still show up over the pink ball */
+  text-shadow: 0 0 3px #fff, 0 0 8px #fff, 0 3px 10px rgba(178, 79, 105, 0.35);
+  opacity: 0;
+  animation: heartPop 1500ms cubic-bezier(.2, .8, .3, 1) var(--delay) forwards;
+}
+@keyframes heartPop {
+  0%   { opacity: 1; transform: rotate(var(--angle)) translateY(0) rotate(calc(-1 * var(--angle))) scale(0.3); }
+  55%  { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateY(calc(-1 * var(--distance))) rotate(calc(-1 * var(--angle))) scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .piece { animation: heartFade 900ms ease forwards; }
+  @keyframes heartFade { 0% { opacity: 1; } 100% { opacity: 0; } }
+}
+
+/* ---- Bubbly minus / plus ---------------------------------------------- */
+.bubbles { display: flex; align-items: center; gap: var(--space-lg); }
+.bubble {
+  width: 3.6rem; height: 3.6rem; border-radius: 50%; border: none; cursor: pointer;
+  font-size: 2rem; font-weight: 700; line-height: 1; color: var(--color-text);
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms cubic-bezier(.3, 1.6, .5, 1);
+}
+.bubble:hover:not(:disabled) { transform: scale(1.08); }
+.bubble:active:not(:disabled) { transform: scale(0.92); }
+.bubble:disabled { opacity: 0.4; cursor: default; }
+/* Cocoa on mint is 5.5:1 and cocoa on strawberry is 4.0:1; the symbols are
+   large and bold, which only needs 3:1. */
+.minus { background: var(--color-mint-base); }
+.plus { background: var(--color-strawberry); }
+.of { font-weight: 600; color: var(--color-muted); min-width: 3.5rem; text-align: center; }
+.number { animation: roll 320ms var(--ease-spring); }
+@media (prefers-reduced-motion: reduce) { .number { animation: none; } }

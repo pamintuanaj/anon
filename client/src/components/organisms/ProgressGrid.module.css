@@ -1,0 +1,24 @@
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-soft);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(1.15rem, 1fr));
+  gap: 0.35rem;
+}
+/* Each dot is a little stitch: a rounded "v" shape reads as crochet */
+.dot {
+  aspect-ratio: 1;
+  border-radius: 50% 50% 45% 45%;
+  border: 2px dashed var(--color-primary-soft);
+}
+.done { background: var(--color-accent); border: 2px solid var(--color-accent); }
+.current {
+  background: var(--color-primary); border: 2px solid var(--color-primary);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse { 50% { transform: scale(1.18); } }
+.plain { margin-top: var(--space-md); }
