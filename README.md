@@ -9,8 +9,8 @@ extra counters as a project needs, shows your pattern with highlighters that fol
 place, keeps track of the yarn and hooks you own, and lets you share milestones with other
 crocheters. Light and dark mode included.
 
-**Live app:** not deployed yet
-**Demo (GitHub Pages, demo mode):** not deployed yet
+**Live app:** https://pamintuanaj.github.io/anon/
+**Demo (GitHub Pages, demo mode):** https://pamintuanaj.github.io/anon/
 ## Presentation
 - **Video (public Google Drive link):** https://drive.google.com/drive/folders/1zZ5TEW-Q_FGQT6mvFcf-1ja3KeJO7PJN?usp=sharing
 - **Slides (link or PDF):** https://drive.google.com/drive/folders/1zZ5TEW-Q_FGQT6mvFcf-1ja3KeJO7PJN?usp=sharing
