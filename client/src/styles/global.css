@@ -1,0 +1,224 @@
+/* CrocheTa design tokens. Every component's .module.css reads these; no
+   component invents its own colours or spacing. */
+
+:root {
+  /* Colour: the "ice cream" theme. The six base colours are the ones picked
+     for the theme; the -strong / -deep / tile values are tints and shades of
+     them, added where a base colour fails contrast for text. */
+  --color-strawberry: #E88FA4;    /* base: Strawberry Pink */
+  --color-mint-base: #8ED0D6;     /* base: Soft Mint */
+  --color-coral: #F4B3A8;         /* base: Soft Coral */
+
+  --color-primary: var(--color-strawberry);  /* counter, icon circles, highlights */
+  --color-primary-strong: #B24F69;/* buttons with white text (5.0:1); strawberry itself is 2.4:1 */
+  --color-primary-soft: #F9D5DD;  /* chips, selected nav item */
+  --color-primary-deep: #C25A74;  /* big headings on the cream page (4.0:1, large text) */
+  --color-link: #A8455F;          /* links and small pink text (5.4:1) */
+  --color-accent: var(--color-mint-base);    /* worked rows, success */
+  --color-accent-deep: #2F7C84;
+  --color-secondary: var(--color-coral);
+  --tile-butter: #FBE3B8;         /* vanilla-caramel tint for the timer */
+  --tile-sky: var(--color-mint-base);
+  --tile-mint: #BFE6E8;
+  --tile-lilac: #F9D5DD;
+  --tile-peach: var(--color-coral);
+  --tile-pink: #F8C7D2;
+  --color-bg: #FFF7F8;            /* base: Vanilla Cream */
+  --color-surface: #FFFFFF;       /* base: Pure White */
+  --color-text: #4A4445;          /* base: warm grey (9:1 on cream) */
+  --color-muted: #6E6668;         /* lighter warm grey (5.3:1) */
+  --color-line: #F6DDE3;
+  --color-error-bg: #FFF1F0;
+  --color-error-line: #E57373;
+  --color-error-text: #9C2F2F;
+  --color-on-strong: #FFFFFF;     /* text on filled buttons */
+  --color-warning-bg: #FFF6DC;
+  --color-muted-surface: #FFFAFB;
+  --zen-gradient: linear-gradient(120deg, #FFF7F8, #F9D5DD, #BFE6E8, #FCE0DA, #FFF7F8);
+  --splash-center: #FFFFFF;
+  color-scheme: light;
+
+  /* Type
+     Two fonts with two jobs. Fredoka (rounded, friendly) for headings and big
+     numbers; Nunito (rounded but calm, very readable small) for everything else.
+     One scale, each step about 1.2x the last, so sizes never jump. */
+  --font-display: 'Fredoka', 'Nunito', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-count: var(--font-display);
+  --text-xs: 0.8125rem;   /* 13px  captions, badges */
+  --text-sm: 0.875rem;    /* 14px  secondary text, labels */
+  --text-md: 1rem;        /* 16px  body */
+  --text-lg: 1.1875rem;   /* 19px  card titles */
+  --text-xl: 1.5rem;      /* 24px  section titles */
+  --text-xxl: 2.125rem;   /* 34px  page titles */
+  --text-display: 3rem;   /* 48px  the big counter numbers */
+
+  /* Space: a 4px grid. Everything is a multiple of 4. */
+  --space-xs: 0.25rem;    /* 4 */
+  --space-sm: 0.5rem;     /* 8 */
+  --space-md: 1rem;       /* 16 */
+  --space-lg: 1.5rem;     /* 24 */
+  --space-xl: 2rem;       /* 32 */
+  --space-2xl: 3rem;      /* 48 */
+
+  /* Shape. Cards and buttons 1.5rem; form fields a little tighter, because a
+     1.5rem corner on a text box makes it look like a button. */
+  --radius-sm: 0.75rem;
+  --radius-input: 0.9rem;
+  --radius-md: 1.5rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-spring: cubic-bezier(.3, 1.5, .5, 1);
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+
+  /* A pink-tinted shadow instead of a grey one */
+  /* Soft, diffused: a wide low-opacity pink glow plus a faint close shadow */
+  --shadow-soft: 0 14px 40px rgba(232, 143, 164, 0.18), 0 2px 6px rgba(74, 68, 69, 0.04);
+  --shadow-press: 0 8px 22px rgba(178, 79, 105, 0.28), 0 1px 3px rgba(74, 68, 69, 0.06);
+
+  /* The stitched outline: a dashed line set in from the edge, like a seam */
+  --stitch: 2px dashed var(--color-line);
+
+  --nav-width: 15rem;
+  --content-max: 84rem;
+  --bottom-bar: 4.5rem;
+}
+
+
+/* ---- Dark mode ----------------------------------------------------------
+   The same token names with night-time values, so no component changes.
+   Two ways in: the user picked dark (data-theme="dark" on <html>), or the
+   phone/computer is in dark mode and the user did not pick light. */
+:root[data-theme="dark"] {
+  --color-primary: #E88FA4;
+  --color-primary-strong: #B24F69;
+  --color-primary-soft: #4A2B35;
+  --color-primary-deep: #F2A7B8;
+  --color-link: #F4B6C4;
+  --color-accent: #8ED0D6;
+  --color-accent-deep: #8ED0D6;
+  --color-secondary: #5A3A34;
+  --tile-butter: #4D4230;
+  --tile-sky: #234A4F;
+  --tile-mint: #28444A;
+  --tile-lilac: #4A2B35;
+  --tile-peach: #573A35;
+  --tile-pink: #4D2E38;
+  --color-bg: #1F1A1C;
+  --color-surface: #2B2427;
+  --color-text: #F3E9EC;
+  --color-muted: #C4B3B9;
+  --color-line: #43383D;
+  --color-error-bg: #3A2226;
+  --color-error-line: #D46A6A;
+  --color-error-text: #FFB4B4;
+  --color-warning-bg: #3D3423;
+  --color-muted-surface: #251F22;
+  --shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-press: 0 8px 22px rgba(0, 0, 0, 0.45);
+  --zen-gradient: linear-gradient(120deg, #1F1A1C, #3A2530, #1E3A3E, #3D2A28, #1F1A1C);
+  --splash-center: #2B2427;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-primary: #E88FA4;
+    --color-primary-strong: #B24F69;
+    --color-primary-soft: #4A2B35;
+    --color-primary-deep: #F2A7B8;
+    --color-link: #F4B6C4;
+    --color-accent: #8ED0D6;
+    --color-accent-deep: #8ED0D6;
+    --color-secondary: #5A3A34;
+    --tile-butter: #4D4230;
+    --tile-sky: #234A4F;
+    --tile-mint: #28444A;
+    --tile-lilac: #4A2B35;
+    --tile-peach: #573A35;
+    --tile-pink: #4D2E38;
+    --color-bg: #1F1A1C;
+    --color-surface: #2B2427;
+    --color-text: #F3E9EC;
+    --color-muted: #C4B3B9;
+    --color-line: #43383D;
+    --color-error-bg: #3A2226;
+    --color-error-line: #D46A6A;
+    --color-error-text: #FFB4B4;
+    --color-warning-bg: #3D3423;
+    --color-muted-surface: #251F22;
+    --shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+    --shadow-press: 0 8px 22px rgba(0, 0, 0, 0.45);
+    --zen-gradient: linear-gradient(120deg, #1F1A1C, #3A2530, #1E3A3E, #3D2A28, #1F1A1C);
+    --splash-center: #2B2427;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0; font-weight: 600; letter-spacing: -0.005em; }
+h1 { color: var(--color-primary-deep); }
+h1 { font-size: var(--text-xl); }
+h2 { font-size: var(--text-lg); }
+h3 { font-size: var(--text-md); font-weight: 600; }
+p { max-width: 70ch; }
+p { margin: 0; }
+
+a { color: var(--color-link); font-weight: 600; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--color-line);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+button:focus-visible, a:focus-visible {
+  outline: 3px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+input:hover, select:hover, textarea:hover { border-color: var(--color-primary-soft); }
+input:focus, select:focus, textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(232, 143, 164, 0.18); outline: none; }
+::placeholder { color: var(--color-muted); opacity: 0.75; }
+label { display: block; font-weight: 700; font-size: var(--text-sm); margin-bottom: 6px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---- Motion helpers ------------------------------------------------------
+   .enter        fades and lifts an element in when it appears.
+   style="--i: n" on list items staggers them: each starts 45ms after the last.
+   .lift         cards rise a little under the pointer. */
+@keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.enter { animation: enter 420ms var(--ease-out) both; animation-delay: calc(min(var(--i, 0), 12) * 45ms); }
+.lift { transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out); }
+.lift:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(232, 143, 164, 0.24), 0 2px 6px rgba(74, 68, 69, 0.05); }
+@keyframes roll { from { opacity: 0; transform: translateY(40%); } to { opacity: 1; transform: none; } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

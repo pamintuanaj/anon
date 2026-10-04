@@ -1,0 +1,50 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--nav-width) minmax(0, 1fr);
+}
+.column { min-width: 0; }
+
+/* Fluid padding: tighter on small laptops, roomier on big screens. Content is
+   centred up to --content-max so wide screens do not leave half the page empty
+   or stretch lines too long. */
+.main {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.75rem) clamp(1rem, 3.5vw, 3rem) 0;
+}
+
+.mobileBar { display: none; }
+
+/* Zen Focus Mode: no navigation, one column, and a slow drifting gradient.
+   The gradient is four times wider than the screen (background-size 400%)
+   and the animation slides it back and forth, so the colours seem to flow. */
+.zen {
+  grid-template-columns: 1fr;
+  background: var(--zen-gradient);
+  background-size: 400% 400%;
+  animation: zenDrift 28s ease-in-out infinite;
+}
+@keyframes zenDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .mobileBar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: calc(var(--space-sm) + env(safe-area-inset-top, 0px)) var(--space-md) var(--space-sm);
+    background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  .mobileBrand { display: flex; align-items: center; gap: var(--space-sm); font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); color: var(--color-primary-deep); }
+  .main { padding: var(--space-md) var(--space-md) calc(5rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen { animation: none; background-position: 30% 50%; }
+}
