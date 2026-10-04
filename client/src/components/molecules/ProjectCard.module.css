@@ -1,0 +1,46 @@
+.card {
+  --swatch: var(--color-primary);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.cover {
+  position: relative; display: grid; place-items: center;
+  aspect-ratio: 16 / 10;
+  /* a soft wash of the yarn colour behind the drawing */
+  background: color-mix(in srgb, var(--swatch) 28%, var(--color-surface));
+  text-decoration: none;
+}
+.art { width: 58%; max-width: 9rem; transition: transform 400ms var(--ease-spring); }
+.card:hover .art { transform: rotate(-8deg) scale(1.04); }
+.track { fill: none; stroke: color-mix(in srgb, var(--color-surface) 70%, transparent); stroke-width: 8; }
+.ring {
+  fill: none; stroke: var(--color-primary-strong); stroke-width: 8; stroke-linecap: round;
+  transform: rotate(-90deg); transform-origin: 64px 64px;
+  animation: ringIn 900ms var(--ease-out) both;
+}
+@keyframes ringIn { from { stroke-dashoffset: 327; } }
+.percent {
+  position: absolute; top: var(--space-sm); right: var(--space-sm);
+  background: var(--color-surface); color: var(--color-text);
+  font-family: var(--font-display); font-weight: 600; font-size: var(--text-sm);
+  padding: 0.15rem 0.6rem; border-radius: var(--radius-pill);
+}
+.body { padding: var(--space-md) var(--space-lg) 0; display: grid; gap: var(--space-xs); flex: 1; }
+.title { font-size: var(--text-lg); }
+.title a { color: var(--color-text); text-decoration: none; }
+.title a:hover { color: var(--color-link); }
+.meta { font-weight: 700; font-size: var(--text-sm); color: var(--color-link); }
+.pattern { font-size: var(--text-sm); color: var(--color-muted); }
+.actions { display: flex; gap: var(--space-sm); padding: var(--space-md) var(--space-lg) var(--space-lg); align-items: center; }
+.select { padding: 0.45rem 0.7rem; flex: 1; min-width: 0; }
+.delete {
+  display: grid; place-items: center; width: 2.4rem; height: 2.4rem; flex: none;
+  border-radius: 50%; border: none; cursor: pointer;
+  background: var(--color-bg); color: var(--color-error-text);
+  transition: background 150ms ease, transform 200ms var(--ease-spring);
+}
+.delete:hover { background: var(--color-error-bg); transform: scale(1.08); }
+@media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
