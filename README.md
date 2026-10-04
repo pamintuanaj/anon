@@ -11,7 +11,10 @@ crocheters. Light and dark mode included.
 
 **Live app:** not deployed yet
 **Demo (GitHub Pages, demo mode):** not deployed yet
-**Demo video:** coming in week 3
+## Presentation
+- **Video (public Google Drive link):** https://drive.google.com/drive/folders/1zZ5TEW-Q_FGQT6mvFcf-1ja3KeJO7PJN?usp=sharing
+- **Slides (link or PDF):** https://drive.google.com/drive/folders/1zZ5TEW-Q_FGQT6mvFcf-1ja3KeJO7PJN?usp=sharing
+- **Square image:** Uploaded to repository / included in Drive folder
 
 ![The row tracker on desktop](docs/assets/screenshot-tracker.png)
 
@@ -290,7 +293,7 @@ the browser only has to log in once.
 
 ## AI use
 
-This project was built with heavy help from **Claude** (Anthropic), which generated most
+This project was built with help from **Claude** (Anthropic), which generated most
 of the code and documentation. What it did, where it was wrong, and which parts I wrote
 myself are recorded in [AI-USAGE.md](AI-USAGE.md).
 
