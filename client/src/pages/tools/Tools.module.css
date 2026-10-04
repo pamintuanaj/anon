@@ -1,0 +1,49 @@
+.lookup {
+  background: var(--tile-sky); border-radius: var(--radius-lg);
+  padding: var(--space-lg); margin-bottom: var(--space-lg); max-width: 40rem;
+}
+.lookupRow { display: flex; gap: var(--space-md); align-items: center; flex-wrap: wrap; }
+.lookupRow input { width: 8rem; border-radius: var(--radius-pill); border-color: transparent; }
+.answer { flex: 1; min-width: 12rem; }
+
+.tableWrap {
+  overflow-x: auto; max-width: 40rem;
+  background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+}
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 0.7rem 1.2rem; text-align: left; }
+.table thead th { background: var(--color-primary-soft); color: var(--color-link); font-weight: 600; }
+.table tbody tr + tr td { border-top: 1px solid var(--color-line); }
+.hit td { background: var(--color-warning-bg); }
+
+.weights { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: var(--space-md); }
+.weight {
+  display: flex; gap: var(--space-md); align-items: flex-start;
+  background: var(--color-surface); border-radius: var(--radius-lg);
+  padding: var(--space-md); box-shadow: var(--shadow-soft);
+}
+.number {
+  flex: none; width: 3rem; height: 3rem; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: 1.3rem;
+}
+.weightName { font-size: var(--text-md); }
+.also { font-size: var(--text-sm); color: var(--color-muted); }
+.hook { font-size: var(--text-sm); margin-top: var(--space-xs); }
+.note { grid-column: 1 / -1; font-size: var(--text-sm); color: var(--color-muted); }
+
+/* ---- shared by the calculators ---- */
+.calc {
+  background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+  padding: var(--space-lg); display: grid; gap: var(--space-md); max-width: 44rem;
+}
+.calc h2 { font-size: var(--text-lg); }
+.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: var(--space-md); align-items: end; }
+.result {
+  background: var(--tile-mint); border-radius: var(--radius-md); padding: var(--space-md) var(--space-lg);
+  font-size: 1.05rem; display: grid; gap: var(--space-xs);
+}
+.result strong { font-size: 1.4rem; }
+.explain { font-size: var(--text-sm); color: var(--color-muted); }
+.search { max-width: 28rem; margin-bottom: var(--space-md); }
+.glossary td:first-child { font-weight: 700; white-space: nowrap; }
+.pill { font-size: 0.72rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: var(--radius-pill); background: var(--color-primary-soft); color: var(--color-link); }

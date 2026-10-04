@@ -1,0 +1,25 @@
+.mini {
+  min-height: 100vh; padding: var(--space-lg); display: grid; align-content: start; justify-items: center;
+  gap: var(--space-sm); text-align: center; background: var(--color-bg);
+}
+.title { font-size: var(--text-lg); color: var(--color-primary-deep); }
+.sub { color: var(--color-muted); font-size: var(--text-sm); }
+.count {
+  font-size: 5rem; font-weight: 700; line-height: 1.1; color: var(--color-primary-deep);
+  animation: pop 400ms cubic-bezier(.3, 1.6, .5, 1);
+}
+@keyframes pop { from { transform: scale(0.8); } }
+.buttons { display: flex; gap: var(--space-lg); }
+.buttons button {
+  width: 4.5rem; height: 4.5rem; border-radius: 50%; border: none; cursor: pointer;
+  font-size: 2rem; font-weight: 600; background: var(--color-surface); color: var(--color-link);
+  box-shadow: var(--shadow-soft);
+}
+.buttons .plus { background: var(--color-primary-strong); color: var(--color-on-strong); }
+.buttons button:disabled { opacity: 0.4; }
+.reminder { background: var(--color-warning-bg); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); font-size: var(--text-sm); }
+.counters { list-style: none; padding: 0; margin: var(--space-sm) 0 0; width: 100%; display: grid; gap: var(--space-xs); }
+.counters li {
+  display: flex; justify-content: space-between; background: var(--color-surface);
+  border-left: 5px solid var(--c); border-radius: var(--radius-sm); padding: 0.4rem 0.8rem; font-size: var(--text-sm);
+}
