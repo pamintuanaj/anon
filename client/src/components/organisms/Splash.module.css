@@ -1,0 +1,66 @@
+.splash {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 42%, var(--splash-center) 0%, var(--color-bg) 55%, var(--color-primary-soft) 100%);
+  cursor: pointer;
+  transition: opacity 420ms ease, transform 420ms ease;
+}
+.leaving { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+.center { display: grid; justify-items: center; gap: var(--space-sm); text-align: center; }
+
+/* The ball drops in, squashes, and settles, then rocks gently */
+.logo { animation: drop 900ms cubic-bezier(.3, 1.4, .5, 1) both, rock 2.4s ease-in-out 900ms infinite; transform-origin: 50% 90%; }
+@keyframes drop {
+  0% { transform: translateY(-60vh) scale(0.6); opacity: 0; }
+  60% { transform: translateY(0) scale(1.08, 0.9); opacity: 1; }
+  80% { transform: translateY(-8px) scale(0.97, 1.03); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes rock { 0%, 100% { rotate: -4deg; } 50% { rotate: 4deg; } }
+
+/* The yarn tail and the wraps draw themselves in */
+.logo :global(.logo-tail),
+.logo :global(.logo-wraps path) {
+  stroke-dasharray: 120; stroke-dashoffset: 120;
+  animation: draw 900ms ease-out 500ms forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* Letters of the name hop up one after another */
+.word { display: flex; font-size: clamp(2.4rem, 8vw, 3.4rem); color: var(--color-primary-deep); letter-spacing: -0.01em; }
+.word span { display: inline-block; opacity: 0; animation: hop 480ms cubic-bezier(.3, 1.6, .5, 1) var(--d) forwards; }
+@keyframes hop { from { opacity: 0; transform: translateY(18px) scale(0.7); } to { opacity: 1; transform: none; } }
+
+.tagline { color: var(--color-muted); font-weight: 500; opacity: 0; animation: fade 500ms ease 1.2s forwards; }
+@keyframes fade { to { opacity: 1; } }
+
+/* A little thread "loading" line that fills while the splash plays */
+.thread { width: 9rem; height: 6px; border-radius: 99px; background: var(--color-surface); overflow: hidden; margin-top: var(--space-md); }
+.thread span { display: block; height: 100%; width: 0; background: var(--color-primary); border-radius: inherit; animation: fill 2.2s ease-in-out forwards; }
+@keyframes fill { to { width: 100%; } }
+
+/* Soft pastel bubbles floating up behind everything */
+.bubbles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.bubbles span {
+  position: absolute; bottom: -80px;
+  left: calc(var(--i) * 10% + 3%);
+  width: calc(28px + var(--i) * 5px); height: calc(28px + var(--i) * 5px);
+  border-radius: 50%;
+  background: var(--tile-pink);
+  opacity: 0.55;
+  animation: float calc(3s + var(--i) * 0.25s) ease-in calc(var(--i) * 0.12s) forwards;
+}
+.bubbles span:nth-child(3n) { background: var(--tile-butter); }
+.bubbles span:nth-child(3n+1) { background: var(--tile-sky); }
+.bubbles span:nth-child(4n) { background: var(--tile-mint); }
+@keyframes float { to { transform: translateY(-120vh); } }
+
+.skip { position: absolute; bottom: calc(var(--space-lg) + env(safe-area-inset-bottom, 0px)); font-size: var(--text-sm); color: var(--color-muted); opacity: 0; animation: fade 400ms ease 1.4s forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .logo, .word span, .tagline, .skip { animation: none !important; opacity: 1; }
+  .thread span { animation: none !important; width: 100%; }
+  .bubbles { display: none; }
+  .logo :global(.logo-tail), .logo :global(.logo-wraps path) { stroke-dashoffset: 0; animation: none; }
+}

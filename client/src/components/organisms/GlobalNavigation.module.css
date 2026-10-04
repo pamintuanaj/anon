@@ -1,0 +1,57 @@
+.nav {
+  position: sticky; top: 0; align-self: start;
+  height: 100vh; height: 100dvh;
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-surface);
+  box-shadow: 1px 0 0 var(--color-line);
+  display: flex; flex-direction: column; gap: var(--space-lg);
+}
+.brand { display: flex; align-items: center; gap: var(--space-sm); text-decoration: none; padding: 0 var(--space-sm); }
+.brandText { display: grid; line-height: 1.1; }
+.wordmark { font-family: var(--font-display); font-weight: 700; font-size: var(--text-xl); color: var(--color-primary-deep); }
+.tagline { font-size: var(--text-xs); color: var(--color-muted); font-weight: 600; }
+
+.cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-sm);
+  border: none; cursor: pointer; font: inherit; font-weight: 700;
+  background: var(--color-primary-strong); color: var(--color-on-strong);
+  border-radius: var(--radius-md); padding: 0.75rem 1rem;
+  box-shadow: var(--shadow-press);
+  transition: transform 180ms var(--ease-spring), box-shadow 180ms ease;
+}
+.cta:hover { transform: translateY(-2px); }
+.cta:active { transform: translateY(1px) scale(0.98); }
+
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-xs); }
+.link {
+  position: relative; display: flex; align-items: center; gap: var(--space-md);
+  padding: 0.7rem var(--space-md); border-radius: var(--radius-md);
+  color: var(--color-muted); text-decoration: none; font-weight: 700;
+  transition: background 200ms ease, color 200ms ease;
+}
+.link:hover { background: var(--color-bg); color: var(--color-text); }
+.icon { transition: transform 250ms var(--ease-spring); }
+.link:hover .icon { transform: scale(1.12) rotate(-6deg); }
+.active, .active:hover { background: var(--color-primary-soft); color: var(--color-link); }
+/* the little strawberry marker on the selected page */
+.active::before {
+  content: ''; position: absolute; left: -0.5rem; top: 25%; bottom: 25%; width: 4px;
+  border-radius: 4px; background: var(--color-primary);
+  animation: grow 300ms var(--ease-spring);
+}
+@keyframes grow { from { transform: scaleY(0); } }
+
+.bottom { margin-top: auto; display: grid; gap: var(--space-sm); }
+
+@media (max-width: 768px) {
+  .nav {
+    position: fixed; top: auto; bottom: 0; left: 0; right: 0; z-index: 25;
+    height: auto; padding: var(--space-xs) var(--space-sm) calc(var(--space-xs) + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 24px rgba(232, 143, 164, 0.12);
+    flex-direction: row;
+  }
+  .brand, .cta, .bottom { display: none; }
+  .list { grid-template-columns: repeat(5, 1fr); width: 100%; gap: 2px; }
+  .link { flex-direction: column; gap: 2px; padding: 0.45rem 0; font-size: 0.72rem; justify-content: center; }
+  .active::before { left: 30%; right: 30%; top: auto; bottom: -3px; width: auto; height: 3px; }
+}
