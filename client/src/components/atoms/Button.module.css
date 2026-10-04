@@ -1,0 +1,25 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);   /* 1.5rem, same as cards */
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-press);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+  white-space: nowrap;
+}
+
+.button:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.md { padding: 0.55rem 1.1rem; font-size: var(--text-md); }
+.sm { padding: 0.3rem 0.75rem; font-size: var(--text-sm); }
+
+/* White on the strong rose passes AA (4.8:1); on the lighter rose it would not. */
+.primary { background: var(--color-primary-strong); color: var(--color-on-strong); }
+.secondary { background: var(--color-primary-soft); color: var(--color-text); box-shadow: none; }
+.ghost { background: var(--color-surface); border-color: var(--color-line); color: var(--color-text); box-shadow: none; }
+.danger { background: var(--color-surface); border-color: var(--color-error-line); color: var(--color-error-text); box-shadow: none; }

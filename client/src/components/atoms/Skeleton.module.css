@@ -1,0 +1,12 @@
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--min), 1fr)); gap: var(--space-lg); }
+.list { display: grid; gap: var(--space-lg); max-width: 44rem; }
+.card, .row {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(100deg, var(--color-surface) 30%, var(--color-bg) 50%, var(--color-surface) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite, enter 400ms var(--ease-out) both;
+  animation-delay: 0s, calc(var(--i, 0) * 60ms);
+  box-shadow: var(--shadow-soft);
+}
+.row { height: 9rem; }
+@media (prefers-reduced-motion: reduce) { .card, .row { animation: none; } }

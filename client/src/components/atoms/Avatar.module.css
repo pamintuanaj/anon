@@ -1,0 +1,13 @@
+.avatar {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: var(--color-text);
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 2px var(--color-line);
+}
+.sm { width: 1.9rem; height: 1.9rem; font-size: 0.8rem; }
