@@ -1,0 +1,13 @@
+.notice {
+  display: inline-flex; align-items: center; gap: var(--space-sm);
+  max-width: 100%;
+  background: var(--tile-mint); color: var(--color-text);
+  border-radius: var(--radius-pill); padding: 0.35rem 0.5rem 0.35rem 0.9rem;
+  font-size: var(--text-sm); margin-bottom: var(--space-lg);
+  animation: enter 400ms var(--ease-out) both;
+}
+.close {
+  display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  border: none; background: transparent; color: var(--color-text); cursor: pointer;
+}
+.close:hover { background: rgba(255, 255, 255, 0.5); }
