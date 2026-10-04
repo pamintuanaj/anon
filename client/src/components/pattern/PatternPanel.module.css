@@ -1,0 +1,24 @@
+.panel { display: grid; gap: var(--space-md); margin-top: var(--space-xl); }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-sm); }
+.title { font-size: var(--text-xl); }
+.importButtons { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.muted { color: var(--color-muted); font-size: var(--text-sm); }
+.box {
+  background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+  padding: var(--space-lg); display: grid; gap: var(--space-md); font-size: var(--text-sm);
+}
+.box kbd { background: var(--color-bg); border-radius: 6px; padding: 0 0.35rem; font-family: inherit; font-weight: 700; }
+.empty {
+  background: var(--color-surface); border: 2px dashed var(--color-primary-soft); border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg); color: var(--color-muted); font-size: var(--text-md); text-align: center;
+  display: grid; justify-items: center;
+}
+.tabs { display: flex; gap: var(--space-sm); overflow-x: auto; scrollbar-width: none; }
+.tab {
+  flex: none; display: flex; align-items: center;
+  background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-soft);
+}
+.tab button { display: inline-flex; align-items: center; gap: 0.35rem; border: none; background: none; cursor: pointer; color: var(--color-text); font-weight: 600; padding: 0.45rem 0.8rem; }
+.tabOn { background: var(--color-primary-strong); }
+.tabOn button { color: var(--color-on-strong); }
+.x { padding-left: 0 !important; opacity: 0.7; }
