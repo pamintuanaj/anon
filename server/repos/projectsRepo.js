@@ -1,7 +1,8 @@
 // Every query uses $1, $2 placeholders. User input never gets pasted into SQL.
 
 const COLUMNS = `id, title, pattern_ref, color_hex, total_rows, current_row, current_stitch,
-  status, notes, elapsed_seconds, created_at, updated_at`
+  status, notes, elapsed_seconds, created_at, updated_at,
+  cover_url, (cover_data IS NOT NULL) AS has_cover_upload, cover_version`
 
 export // Returns an array of records, or an empty array if none exist.
 // Returns an array of records, or an empty array if none exist.
@@ -72,4 +73,48 @@ export async function saveProgress(db, id, p) {
 export async function remove(db, id) {
   const { rowCount } = await db.query('DELETE FROM projects WHERE id = $1', [id])
   return rowCount > 0
+}
+
+// ---- Covers -----------------------------------------------------------------
+// An uploaded image replaces any link, and a link replaces any upload.
+export async function setCoverImage(db, id, { mime, data }) {
+  const { rows } = await db.query(
+    `UPDATE projects
+        SET cover_data = $2, cover_mime = $3, cover_url = NULL,
+            cover_version = cover_version + 1, updated_at = now()
+      WHERE id = $1
+      RETURNING ${COLUMNS}`,
+    [id, data, mime]
+  )
+  return rows[0] ?? null
+}
+
+export async function setCoverUrl(db, id, url) {
+  const { rows } = await db.query(
+    `UPDATE projects
+        SET cover_url = $2, cover_data = NULL, cover_mime = NULL,
+            cover_version = cover_version + 1, updated_at = now()
+      WHERE id = $1
+      RETURNING ${COLUMNS}`,
+    [id, url]
+  )
+  return rows[0] ?? null
+}
+
+export async function clearCover(db, id) {
+  const { rows } = await db.query(
+    `UPDATE projects
+        SET cover_url = NULL, cover_data = NULL, cover_mime = NULL,
+            cover_version = cover_version + 1, updated_at = now()
+      WHERE id = $1
+      RETURNING ${COLUMNS}`,
+    [id]
+  )
+  return rows[0] ?? null
+}
+
+export async function getCoverImage(db, id) {
+  const { rows } = await db.query(
+    'SELECT cover_mime AS mime, cover_data AS data FROM projects WHERE id = $1 AND cover_data IS NOT NULL', [id])
+  return rows[0] ?? null
 }
