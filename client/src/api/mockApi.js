@@ -2,16 +2,17 @@
 // localStorage and nowhere else. It copies the server's rules (row clamping,
 // auto-done, snapshot posts) so the app behaves the same either way.
 
+import { cleanDesign } from '../utils/pattern.js'
 import { seedProjects, seedMaterials, seedPosts, seedComments, seedCounters, seedReminders, seedCharts } from './seed.js'
 
 const KEYS = {
   projects: 'crocheta:v3:projects', materials: 'crocheta:v3:materials', posts: 'crocheta:v3:posts',
   comments: 'crocheta:v3:comments', counters: 'crocheta:v3:counters', reminders: 'crocheta:v3:reminders',
-  patterns: 'crocheta:v3:patterns', charts: 'crocheta:v3:charts',
+  patterns: 'crocheta:v3:patterns', charts: 'crocheta:v3:charts', designs: 'crocheta:v3:designs',
 }
 const SEEDS = {
   projects: seedProjects, materials: seedMaterials, posts: seedPosts, comments: seedComments,
-  counters: seedCounters, reminders: seedReminders, patterns: [], charts: seedCharts,
+  counters: seedCounters, reminders: seedReminders, patterns: [], charts: seedCharts, designs: [],
 }
 
 // A real network is not instant; the delay keeps loading states honest.
@@ -119,6 +120,31 @@ export async function deleteProject(id) {
   return remove('projects', id)
 }
 
+// Project covers. Demo mode keeps an uploaded picture as a data: URL inside the
+// project row, so cover_url can hold either a link or the shrunken photo.
+const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(reader.result)
+  reader.onerror = () => reject(new Error('Could not read the picture'))
+  reader.readAsDataURL(blob)
+})
+const withCover = (cover_url) => (p) => ({ cover_url, has_cover_upload: false, cover_version: (p.cover_version ?? 0) + 1, updated_at: now() })
+
+export async function setProjectCoverFile(id, blob) {
+  await delay()
+  if (!blob.type.startsWith('image/')) throw new Error('That file is not a PNG, JPEG or WebP image')
+  return patch('projects', id, withCover(await blobToDataUrl(blob)))
+}
+
+export async function setProjectCoverUrl(id, url) {
+  await delay()
+  if (!String(url).trim().startsWith('https://')) throw new Error('url must start with https://')
+  return patch('projects', id, withCover(String(url).trim()))
+}
+
+export async function removeProjectCover(id) { await delay(); return patch('projects', id, withCover(null)) }
+export const projectCoverSrc = (project) => project.cover_url || null
+
 // Stash materials
 // Same rule as the server: some left, but at or below the item's threshold.
 const withLow = (m) => ({ ...m, low_stock: m.qty > 0 && m.qty <= m.low_at })
@@ -172,17 +198,30 @@ export async function listPosts({ search, saved } = {}) {
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
 }
 
-export async function createPost({ author, body, project_id }) {
+// Same list the server checks. Demo mode keeps a picture as a data: URL in the row.
+const STICKERS = ['yarn', 'hook', 'frog', 'icecream', 'strawberry', 'heart', 'sparkle', 'rainbow']
+function mediaOf({ sticker, image }) {
+  if (sticker && !STICKERS.includes(sticker)) throw new Error('sticker must be one of the crochet stickers')
+  if (image && !/^data:image\/(jpeg|png|webp);base64,/.test(image)) throw new Error('image must be a PNG, JPEG or WebP picture')
+  if (image && image.length > 700 * 1024) throw new Error('That picture is too big.')
+  return { sticker: sticker || null, image: image || null, has_image: Boolean(image) }
+}
+
+export const postImageSrc = (post) => post.image || null
+export const commentImageSrc = (comment) => comment.image || null
+
+export async function createPost({ author, body = '', project_id, sticker, image }) {
   await delay()
   requireText(author, 'author')
-  requireText(body, 'body')
+  const media = mediaOf({ sticker, image })
+  if (!String(body).trim() && !media.sticker && !media.image) throw new Error('body is required')
   const rows = read('posts')
   let snapshot = { project_id: null, project_title: null, row_snapshot: null, total_rows_snapshot: null }
   if (project_id) {
     const project = find('projects', project_id)
     snapshot = { project_id: project.id, project_title: project.title, row_snapshot: project.current_row, total_rows_snapshot: project.total_rows }
   }
-  const created = { id: nextId(rows), author: author.trim(), body: body.trim(), ...snapshot, likes: 0, saved: false, created_at: now() }
+  const created = { id: nextId(rows), author: author.trim(), body: body.trim(), ...snapshot, ...media, likes: 0, saved: false, created_at: now() }
   write('posts', [...rows, created])
   return withCount(created)
 }
@@ -212,13 +251,14 @@ export async function listComments(postId) {
     .sort((a, b) => a.created_at.localeCompare(b.created_at))
 }
 
-export async function createComment(postId, { author, body }) {
+export async function createComment(postId, { author, body = '', sticker, image }) {
   await delay()
   requireText(author, 'author')
-  requireText(body, 'body')
+  const media = mediaOf({ sticker, image })
+  if (!String(body).trim() && !media.sticker && !media.image) throw new Error('body is required')
   find('posts', postId)   // throws "Not found" like the server's 404
   const rows = read('comments')
-  const created = { id: nextId(rows), post_id: Number(postId), author: author.trim(), body: body.trim(), created_at: now() }
+  const created = { id: nextId(rows), post_id: Number(postId), author: author.trim(), body: body.trim(), ...media, created_at: now() }
   write('comments', [...rows, created])
   return created
 }
@@ -329,3 +369,43 @@ export async function createChart(input) {
 
 export async function updateChart(id, input) { await delay(); return patch('charts', id, () => ({ ...input, updated_at: now() })) }
 export async function deleteChart(id) { await delay(); return remove('charts', id) }
+
+// ---- Pattern Builder -----------------------------------------------------------
+// There is no AI in demo mode (a key in the browser would be public), so this
+// always says so and the page falls back to the built-in generator.
+export async function generateDesign() {
+  await delay(100)
+  throw Object.assign(new Error('The AI needs the full app with a server.'), { code: 'ai_not_configured' })
+}
+
+const toDesign = (row) => ({ ...row })
+const listMeta = ({ sections, materials, notes, hook_mm, yarn, ...meta }) => meta
+
+export async function listDesigns() {
+  await delay()
+  return read('designs').sort((a, b) => b.updated_at.localeCompare(a.updated_at)).map(listMeta)
+}
+export async function getDesign(id) { await delay(); return toDesign(find('designs', id)) }
+
+function checked(input) {
+  const { errors, value } = cleanDesign(input)
+  if (errors.length) throw new Error(errors.join(' '))
+  return value
+}
+
+export async function createDesign(input) {
+  await delay()
+  const value = checked(input)
+  const rows = read('designs')
+  const created = { ...value, id: nextId(rows), created_at: now(), updated_at: now() }
+  write('designs', [...rows, created])
+  return toDesign(created)
+}
+
+export async function updateDesign(id, input) {
+  await delay()
+  const value = checked(input)
+  return toDesign(patch('designs', id, () => ({ ...value, updated_at: now() })))
+}
+
+export async function deleteDesign(id) { await delay(); return remove('designs', id) }

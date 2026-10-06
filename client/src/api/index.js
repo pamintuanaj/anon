@@ -14,11 +14,13 @@ const api = USING_MOCK_API ? mockApi : httpApi
 
 export const {
   listProjects, getProject, createProject, updateProject, saveProgress, deleteProject,
+  setProjectCoverFile, setProjectCoverUrl, removeProjectCover, projectCoverSrc,
   listMaterials, createMaterial, updateMaterial, deleteMaterial,
-  listPosts, createPost, likePost, setPostSaved, deletePost,
+  listPosts, createPost, likePost, setPostSaved, deletePost, postImageSrc, commentImageSrc,
   listComments, createComment, deleteComment,
   listCounters, createCounter, updateCounter, setCounterValue, deleteCounter,
   listReminders, createReminder, deleteReminder,
   listPatterns, uploadPattern, patternFileUrl, savePatternMarks, deletePattern,
   listCharts, createChart, updateChart, deleteChart,
+  listDesigns, getDesign, createDesign, updateDesign, deleteDesign, generateDesign,
 } = api

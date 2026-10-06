@@ -1,7 +1,7 @@
-import { Router } from 'express'
+import express, { Router } from 'express'
 import { pool } from '../db/pool.js'
 import * as projects from '../repos/projectsRepo.js'
-import { parseId, validateProject, validateProgress } from '../validate.js'
+import { parseId, validateProject, validateProgress, detectImageType, validateCoverUrl } from '../validate.js'
 
 export const router = Router()
 
@@ -51,6 +51,47 @@ router.patch('/:id/progress', handle(async (req, res) => {
   const row = await projects.saveProgress(pool, req.projectId, value)
   if (!row) return res.status(404).json({ error: 'Project not found' })
   res.json(row)
+}))
+
+// ---- Cover photo ------------------------------------------------------------
+// PUT with an image body uploads a file (the client shrinks it first, so 2 MB is
+// generous). PUT with JSON { url } links to a picture instead. Either one
+// replaces whatever cover was there before.
+const COVER_TYPES = ['image/png', 'image/jpeg', 'image/webp']
+const coverUpload = express.raw({ type: COVER_TYPES, limit: 2 * 1024 * 1024 })
+
+router.put('/:id/cover', coverUpload, handle(async (req, res) => {
+  let row
+  if (Buffer.isBuffer(req.body) && req.body.length > 0) {
+    const mime = detectImageType(req.body)   // decided from the bytes, not the header
+    if (!mime) return res.status(415).json({ error: 'That file is not a PNG, JPEG or WebP image' })
+    row = await projects.setCoverImage(pool, req.projectId, { mime, data: req.body })
+  } else {
+    const { errors, value } = validateCoverUrl(req.body?.url)
+    if (errors.length) return res.status(400).json({ error: errors.join('; ') })
+    row = await projects.setCoverUrl(pool, req.projectId, value)
+  }
+  if (!row) return res.status(404).json({ error: 'Project not found' })
+  res.json(row)
+}))
+
+router.delete('/:id/cover', handle(async (req, res) => {
+  const row = await projects.clearCover(pool, req.projectId)
+  if (!row) return res.status(404).json({ error: 'Project not found' })
+  res.json(row)
+}))
+
+router.get('/:id/cover', handle(async (req, res) => {
+  const file = await projects.getCoverImage(pool, req.projectId)
+  if (!file) return res.status(404).json({ error: 'No cover image' })
+  res.set({
+    'Content-Type': file.mime,
+    'X-Content-Type-Options': 'nosniff',
+    'Content-Security-Policy': 'sandbox',
+    // The client adds ?v=<cover_version>, so a new cover is a new URL.
+    'Cache-Control': 'private, max-age=31536000, immutable',
+  })
+  res.send(file.data)
 }))
 
 router.delete('/:id', handle(async (req, res) => {
