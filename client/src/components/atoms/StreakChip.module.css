@@ -1,0 +1,8 @@
+.chip {
+  display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;
+  padding: 0.3rem 0.8rem; border-radius: var(--radius-pill);
+  background: var(--tile-butter); color: var(--color-text); font-size: var(--text-sm); font-weight: 700;
+}
+.scoop { display: inline-block; animation: wobble 2.4s ease-in-out infinite; }
+@keyframes wobble { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .scoop { animation: none; } }
