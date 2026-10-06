@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Button from '../atoms/Button.jsx'
+import CoverPicker from '../molecules/CoverPicker.jsx'
 import page from '../../pages/Page.module.css'
 
 const COLORS = ['#F8C7D2', '#8ED0D6', '#F4B3A8', '#FBE3B8', '#BFE6E8', '#E88FA4']
@@ -8,6 +9,7 @@ export default function ProjectForm({ onSave, onCancel }) {
   const [form, setForm] = useState({ title: '', pattern_ref: '', total_rows: 40, color_hex: COLORS[0] })
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [cover, setCover] = useState(null)   // chosen here, saved by the parent after the project exists
   const set = (field) => (event) => setForm({ ...form, [field]: event.target.value })
 
   async function submit(event) {
@@ -18,7 +20,7 @@ export default function ProjectForm({ onSave, onCancel }) {
     setSaving(true)
     setError(null)
     try {
-      await onSave({ ...form, total_rows: rows, status: 'ongoing' })
+      await onSave({ ...form, total_rows: rows, status: 'ongoing' }, cover)
     } catch (caught) {
       setError(caught.message)
       setSaving(false)
@@ -42,6 +44,10 @@ export default function ProjectForm({ onSave, onCancel }) {
         <label htmlFor="p-pattern">Pattern (optional)</label>
         <input id="p-pattern" maxLength={200} value={form.pattern_ref} onChange={set('pattern_ref')} placeholder="Where the pattern is from, hook size" />
       </div>
+      <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+        <legend style={{ fontWeight: 800, fontSize: 'var(--text-sm)', marginBottom: 'var(--space-xs)' }}>Cover photo (optional)</legend>
+        <CoverPicker value={cover} onChange={setCover} color={form.color_hex} />
+      </fieldset>
       <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
         <legend style={{ fontWeight: 800, fontSize: 'var(--text-sm)', marginBottom: 'var(--space-xs)' }}>Yarn colour</legend>
         <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>

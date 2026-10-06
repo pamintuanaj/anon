@@ -3,7 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import PageHeader from '../components/organisms/PageHeader.jsx'
 import { SkeletonCards } from '../components/atoms/Skeleton.jsx'
-import { listProjects, createProject, updateProject, deleteProject } from '../api'
+import {
+  listProjects, createProject, updateProject, deleteProject,
+  setProjectCoverFile, setProjectCoverUrl, removeProjectCover,
+} from '../api'
 import { useResource } from '../hooks/useResource.js'
 import ProjectCard from '../components/molecules/ProjectCard.jsx'
 import ProjectForm from '../components/organisms/ProjectForm.jsx'
@@ -27,9 +30,33 @@ export default function GalleryPage() {
   // Load everything once and filter here, so the tab counts are always right.
   const { data: projects, setData: setProjects, status, error, slow, reload } = useResource(() => listProjects(), [])
 
-  async function handleCreate(input) {
+  // Saves whichever cover choice the picker produced; returns the updated project.
+  function applyCover(id, cover) {
+    if (cover.kind === 'file') return setProjectCoverFile(id, cover.blob)
+    if (cover.kind === 'url') return setProjectCoverUrl(id, cover.url)
+    return removeProjectCover(id)
+  }
+
+  async function handleCreate(input, cover) {
     const created = await createProject(input)
+    if (cover) {
+      try {
+        await applyCover(created.id, cover)
+      } catch (caught) {
+        // The project exists now, so do not make the person fill the form in again.
+        setAdding(false)
+        setActionError(new Error(`"${created.title}" was created, but its cover could not be saved (${caught.message}). Use the camera button on its card to try again.`))
+        reload()
+        return
+      }
+    }
     navigate(`/workspace/${created.id}`)
+  }
+
+  // Throws on failure so the dialog can show the message and stay open.
+  async function handleCover(project, cover) {
+    const updated = await applyCover(project.id, cover)
+    setProjects((all) => all.map((p) => (p.id === project.id ? updated : p)))
   }
 
   async function handleStatus(project, newStatus) {
@@ -77,7 +104,7 @@ export default function GalleryPage() {
       {status === 'ready' && shown.length > 0 && (
         <div className={styles.grid}>
           {shown.map((project, i) => (
-            <ProjectCard key={project.id} index={i} project={project} onStatus={handleStatus} onDelete={handleDelete} />
+            <ProjectCard key={project.id} index={i} project={project} onStatus={handleStatus} onDelete={handleDelete} onCover={handleCover} />
           ))}
         </div>
       )}
