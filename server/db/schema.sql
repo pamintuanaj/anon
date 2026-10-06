@@ -134,3 +134,54 @@ CREATE TABLE IF NOT EXISTS charts (
   cells       JSONB       NOT NULL,
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- ---------------------------------------------------------------------------
+-- Phase 2: custom project covers. A cover is EITHER an uploaded image (kept in
+-- cover_data, like pattern files) OR a link (cover_url). Setting one clears the
+-- other. Listing queries never select cover_data, so big images cannot slow the
+-- gallery down; cover_version changes on every edit so browsers refetch.
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS cover_url     TEXT;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS cover_mime    TEXT;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS cover_data    BYTEA;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS cover_version INTEGER NOT NULL DEFAULT 0;
+DO $$ BEGIN
+  ALTER TABLE projects ADD CONSTRAINT projects_cover_url_check
+    CHECK (cover_url IS NULL OR (cover_url ~ '^https://' AND char_length(cover_url) <= 500));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ---------------------------------------------------------------------------
+-- Phase 2: rich community posts. A post or comment can carry a crochet sticker
+-- (an id from a fixed list, checked in validate.js) and/or one small picture.
+-- The picture is shrunk by the browser first, so BYTEA is fine at this size.
+-- A sticker-only or picture-only post has an empty body, so the old "body must
+-- have 1+ characters" rule becomes "body, sticker or picture must exist".
+ALTER TABLE posts    ADD COLUMN IF NOT EXISTS sticker    TEXT;
+ALTER TABLE posts    ADD COLUMN IF NOT EXISTS image_mime TEXT;
+ALTER TABLE posts    ADD COLUMN IF NOT EXISTS image_data BYTEA;
+ALTER TABLE comments ADD COLUMN IF NOT EXISTS sticker    TEXT;
+ALTER TABLE comments ADD COLUMN IF NOT EXISTS image_mime TEXT;
+ALTER TABLE comments ADD COLUMN IF NOT EXISTS image_data BYTEA;
+
+ALTER TABLE posts DROP CONSTRAINT IF EXISTS posts_body_check;
+ALTER TABLE posts ADD CONSTRAINT posts_body_check
+  CHECK (char_length(body) <= 500 AND (char_length(body) >= 1 OR sticker IS NOT NULL OR image_data IS NOT NULL));
+ALTER TABLE comments DROP CONSTRAINT IF EXISTS comments_body_check;
+ALTER TABLE comments ADD CONSTRAINT comments_body_check
+  CHECK (char_length(body) <= 300 AND (char_length(body) >= 1 OR sticker IS NOT NULL OR image_data IS NOT NULL));
+
+-- ---------------------------------------------------------------------------
+-- Phase 2: Pattern Builder. One row per pattern. The row-by-row instructions
+-- are structured JSON in `data` (sections > rows), validated in validate.js.
+-- total_rows is copied out of the JSON so lists can show it without parsing.
+CREATE TABLE IF NOT EXISTS pattern_designs (
+  id          SERIAL PRIMARY KEY,
+  title       TEXT        NOT NULL CHECK (char_length(title) BETWEEN 1 AND 80),
+  difficulty  TEXT        NOT NULL DEFAULT 'beginner'
+                          CHECK (difficulty IN ('beginner', 'easy', 'intermediate', 'advanced')),
+  source      TEXT        NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'ai', 'generator')),
+  total_rows  INTEGER     NOT NULL CHECK (total_rows BETWEEN 1 AND 1000),
+  data        JSONB       NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS pattern_designs_updated_idx ON pattern_designs (updated_at DESC);
