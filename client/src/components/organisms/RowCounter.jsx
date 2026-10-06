@@ -1,3 +1,4 @@
+import Sprinkles from '../molecules/Sprinkles.jsx'
 import styles from './RowCounter.module.css'
 
 // 10 pieces around a circle: 360 / 10 = 36 degrees apart.
@@ -11,7 +12,7 @@ const PIECES = Array.from({ length: 10 }, (_, i) => ({
 // burstKey: a number that changes every time a milestone is hit. Using it as the
 // React `key` makes React throw away the old hearts and mount new ones, which
 // restarts the CSS animation from the beginning.
-export default function RowCounter({ currentRow, totalRows, onAdd, onUndo, burstKey, anchorRef }) {
+export default function RowCounter({ currentRow, totalRows, onAdd, onUndo, burstKey, sprinkleKey, anchorRef }) {
   const finished = currentRow >= totalRows
   return (
     <div className={styles.wrap} ref={anchorRef}>
@@ -26,6 +27,7 @@ export default function RowCounter({ currentRow, totalRows, onAdd, onUndo, burst
           <span key={currentRow} className={styles.number}>{currentRow}</span>
           <span className={styles.hint}>{finished ? 'all done!' : 'tap: +1 row'}</span>
         </button>
+        <Sprinkles burst={sprinkleKey} />
         {burstKey && (
           <div key={burstKey} className={styles.burst} aria-hidden="true">
             {PIECES.map((p, i) => (
