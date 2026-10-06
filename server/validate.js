@@ -88,16 +88,47 @@ export function validateMaterial(body) {
   return { errors, value }
 }
 
+// ---- Community media ---------------------------------------------------------
+// Stickers are drawn by the client from this fixed list. Storing only the id
+// means a post can never carry arbitrary markup.
+export const STICKER_IDS = ['yarn', 'hook', 'frog', 'icecream', 'strawberry', 'heart', 'sparkle', 'rainbow']
+const MAX_POST_IMAGE = 450 * 1024
+
+// Pictures arrive inside the JSON as a data: URL. Rebuild them into bytes and
+// decide the type from the bytes themselves, never from the label.
+export function parseImageDataUrl(input) {
+  if (input == null || input === '') return { errors: [], value: null }
+  if (typeof input !== 'string') return { errors: ['image must be a picture'], value: null }
+  const match = /^data:image\/(?:jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(input)
+  if (!match) return { errors: ['image must be a PNG, JPEG or WebP picture'], value: null }
+  const data = Buffer.from(match[1], 'base64')
+  if (!data.length || data.length > MAX_POST_IMAGE) {
+    return { errors: [`image must be under ${MAX_POST_IMAGE / 1024} KB`], value: null }
+  }
+  const mime = detectImageType(data)
+  return mime ? { errors: [], value: { mime, data } } : { errors: ['image must be a PNG, JPEG or WebP picture'], value: null }
+}
+
+function mediaFields(body, errors) {
+  const sticker = body.sticker == null || body.sticker === '' ? null : String(body.sticker)
+  if (sticker && !STICKER_IDS.includes(sticker)) errors.push('sticker must be one of the crochet stickers')
+  const image = parseImageDataUrl(body.image)
+  errors.push(...image.errors)
+  return { sticker: STICKER_IDS.includes(sticker) ? sticker : null, image: image.value }
+}
+
 export function validatePost(body) {
   const errors = []
+  const media = mediaFields(body, errors)
   const value = {
     author: text(body.author),
     body: text(body.body),
     project_id: body.project_id == null || body.project_id === '' ? null : parseId(body.project_id),
+    ...media,
   }
   if (!value.author) errors.push('author is required')
   if (value.author.length > 40) errors.push('author must be 40 characters or fewer')
-  if (!value.body) errors.push('body is required')
+  if (!value.body && !value.sticker && !value.image) errors.push('body is required')
   if (value.body.length > 500) errors.push('body must be 500 characters or fewer')
   if (body.project_id != null && body.project_id !== '' && value.project_id === null) {
     errors.push('project_id must be a positive whole number')
@@ -107,10 +138,11 @@ export function validatePost(body) {
 
 export function validateComment(body) {
   const errors = []
-  const value = { author: text(body.author), body: text(body.body) }
+  const media = mediaFields(body, errors)
+  const value = { author: text(body.author), body: text(body.body), ...media }
   if (!value.author) errors.push('author is required')
   if (value.author.length > 40) errors.push('author must be 40 characters or fewer')
-  if (!value.body) errors.push('body is required')
+  if (!value.body && !value.sticker && !value.image) errors.push('body is required')
   if (value.body.length > 300) errors.push('body must be 300 characters or fewer')
   return { errors, value }
 }
@@ -172,6 +204,24 @@ export function detectPatternType(buffer, declared) {
     if (!asText.includes('\u0000') && Buffer.from(asText, 'utf8').equals(buffer)) return 'text/plain'
   }
   return null
+}
+
+// Cover photos: images only (the same magic-number check as patterns, minus PDF/text).
+export function detectImageType(buffer) {
+  const type = detectPatternType(buffer, null)
+  return type && type.startsWith('image/') ? type : null
+}
+
+// A cover link must be https and plain-looking. It is only ever used as an <img src>.
+export function validateCoverUrl(input) {
+  const raw = typeof input === 'string' ? input.trim() : ''
+  if (!raw) return { errors: ['url is required'], value: null }
+  if (raw.length > 500) return { errors: ['url must be 500 characters or fewer'], value: null }
+  let url
+  try { url = new URL(raw) } catch { return { errors: ['url is not a valid link'], value: null } }
+  if (url.protocol !== 'https:') return { errors: ['url must start with https://'], value: null }
+  if (url.username || url.password) return { errors: ['url must not contain a login'], value: null }
+  return { errors: [], value: url.toString() }
 }
 
 const clamp01 = (n) => (Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : null)
@@ -256,5 +306,47 @@ export function validateChart(body) {
       errors.push('every cell must be a palette index')
     }
   }
+  return { errors, value }
+}
+
+// ---- Pattern designs (Pattern Builder + AI generator) -----------------------
+// The AI's reply is untrusted text, and so is anything a client posts. Either
+// way the pattern is rebuilt from known fields only, with every string trimmed
+// and capped and every list limited, so the JSONB column cannot fill with junk.
+const DIFFICULTIES = ['beginner', 'easy', 'intermediate', 'advanced']
+const SOURCES = ['manual', 'ai', 'generator']
+const short = (value, max) => (typeof value === 'string' ? value.trim().slice(0, max) : '')
+const strings = (list, count, max) =>
+  (Array.isArray(list) ? list : []).slice(0, count).map((item) => short(item, max)).filter(Boolean)
+
+export function validateDesign(body) {
+  const errors = []
+  const sections = (Array.isArray(body?.sections) ? body.sections : []).slice(0, 12).map((section) => ({
+    name: short(section?.name, 60) || 'Section',
+    rows: (Array.isArray(section?.rows) ? section.rows : []).slice(0, 300).map((row) => ({
+      label: short(row?.label, 24),
+      text: short(row?.text, 300),
+      stitches: Number.isInteger(row?.stitches) && row.stitches >= 0 && row.stitches <= 9999 ? row.stitches : null,
+    })).filter((row) => row.text),
+  })).filter((section) => section.rows.length)
+
+  const total = sections.reduce((sum, section) => sum + section.rows.length, 0)
+  const value = {
+    title: short(body?.title, 80),
+    difficulty: DIFFICULTIES.includes(body?.difficulty) ? body.difficulty : 'beginner',
+    source: SOURCES.includes(body?.source) ? body.source : 'manual',
+    total_rows: total,
+    data: {
+      description: short(body?.description, 400),
+      hook_mm: short(body?.hook_mm, 12),
+      yarn: short(body?.yarn, 80),
+      materials: strings(body?.materials, 15, 80),
+      notes: strings(body?.notes, 8, 200),
+      sections,
+    },
+  }
+  if (!value.title) errors.push('title is required')
+  if (total < 1) errors.push('add at least one row with instructions')
+  if (total > 1000) errors.push('a pattern can have at most 1000 rows')
   return { errors, value }
 }
