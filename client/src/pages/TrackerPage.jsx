@@ -18,12 +18,17 @@ import { useZen } from '../context/ZenContext.jsx'
 import Button from '../components/atoms/Button.jsx'
 import Tabs from '../components/molecules/Tabs.jsx'
 import PageHeader from '../components/organisms/PageHeader.jsx'
-import { Watch, Share2, Check, Loader2, CloudOff } from 'lucide-react'
+import { Watch, Share2, Check, Loader2, CloudOff, Wrench } from 'lucide-react'
 import CountersPanel from '../components/organisms/CountersPanel.jsx'
 import RemindersPanel, { ReminderBanner } from '../components/organisms/RemindersPanel.jsx'
 import PatternPanel from '../components/pattern/PatternPanel.jsx'
 import VoiceControl from '../components/molecules/VoiceControl.jsx'
 import FloatingCounter from '../components/molecules/FloatingCounter.jsx'
+import ToolsDrawer from '../components/organisms/ToolsDrawer.jsx'
+import FinishCelebration from '../components/organisms/FinishCelebration.jsx'
+import StreakChip from '../components/atoms/StreakChip.jsx'
+import { guessShape } from '../utils/shapes.js'
+import { readStreak, recordCraftDay } from '../utils/streak.js'
 import { advanceLinked, rewindLinked, reminderIsDue } from '../utils/counters.js'
 import { Loading, ErrorMessage } from '../components/molecules/StatusMessage.jsx'
 import page from './Page.module.css'
@@ -61,6 +66,17 @@ export default function TrackerPage() {
   const [currentStitch, setCurrentStitch] = useState(0)
   const [celebration, setCelebration] = useState(null)   // { key, message }
   const [heartBurst, setHeartBurst] = useState(null)     // changes on every 10th row
+  const [toolsOpen, setToolsOpen] = useState(false)    // the Tools drawer
+  const [sprinkleKey, setSprinkleKey] = useState(0)       // +1 on every finished row
+  const [finished, setFinished] = useState(false)         // the fullscreen "You did it!"
+  const [streak, setStreak] = useState(() => readStreak())
+  // The progress picture: the person's choice for THIS project, else a guess from its name.
+  const shapeKey = `crocheta:shape:${id}`
+  const [shapeChoice, setShapeChoice] = useState(() => { try { return localStorage.getItem(shapeKey) } catch { return null } })
+  function chooseShape(next) {
+    setShapeChoice(next)
+    try { localStorage.setItem(shapeKey, next) } catch { /* blocked storage: the choice lasts until reload */ }
+  }
   const { isZenMode, setZenMode } = useZen()
 
   // Zen mode belongs to the tracker: leaving the page switches it off, so the
@@ -200,8 +216,12 @@ export default function TrackerPage() {
     setCurrentRow(next)
     setCurrentStitch(0)   // a new row starts from stitch 0
     setDirty(true)
+    setSprinkleKey((k) => k + 1)
+    setStreak(recordCraftDay())
     const milestone = milestoneCrossed(currentRow, next, project.total_rows)
-    if (milestone) setCelebration({ key: Date.now(), message: milestone.message })
+    // The last row gets the fullscreen celebration; the smaller milestones keep the toast.
+    if (milestone?.percent === 100) setFinished(true)
+    else if (milestone) setCelebration({ key: Date.now(), message: milestone.message })
     if (isTenRowMilestone(next)) setHeartBurst(Date.now())
     moveLinked(1)
   }
@@ -267,8 +287,11 @@ export default function TrackerPage() {
   ]
 
   return (
-    <>
+    <div className={`${styles.root} ${toolsOpen ? styles.split : ''}`}>
       <Confetti burst={celebration?.key} message={celebration?.message} />
+      <FinishCelebration open={finished} onClose={() => setFinished(false)} title={project.title}
+        totalRows={project.total_rows} seconds={seconds}
+        onShare={() => { setFinished(false); setSharing(true) }} />
 
       <PageHeader
         breadcrumb={isZenMode ? null : [{ label: 'Projects', to: '/gallery' }, { label: project.title }]}
@@ -276,8 +299,15 @@ export default function TrackerPage() {
         subtitle={project.pattern_ref || null}
         actions={
           <>
+            {!isZenMode && <StreakChip count={streak.count} best={streak.best} />}
             <SaveChip state={saveState} dirty={dirty} onRetry={persist} />
             {!isZenMode && <VoiceControl commands={voiceCommands} />}
+            {!isZenMode && (
+              <Button size="sm" variant={toolsOpen ? 'secondary' : 'ghost'} aria-expanded={toolsOpen}
+                title="Calculators, sizes and charts, beside your pattern" onClick={() => setToolsOpen((o) => !o)}>
+                <Wrench size={16} aria-hidden="true" /> Tools
+              </Button>
+            )}
             {!isZenMode && (
               <Button size="sm" variant="ghost" title="A small counter window to keep beside your pattern"
                 onClick={() => window.open(`${import.meta.env.BASE_URL}mini/${project.id}`, 'crocheta-mini', 'width=340,height=520')}>
@@ -296,7 +326,7 @@ export default function TrackerPage() {
       <section className={`${styles.hero} ${isZenMode ? styles.heroZen : ''}`} aria-label="Row counter and progress">
         <div className={`${styles.card} ${styles.counterCard} enter`} style={{ '--i': 0 }}>
           <RowCounter currentRow={currentRow} totalRows={project.total_rows} onAdd={addRow} onUndo={undoRow}
-            burstKey={heartBurst} anchorRef={counterAnchor} />
+            burstKey={heartBurst} sprinkleKey={sprinkleKey} anchorRef={counterAnchor} />
           {!isZenMode && (
             <Button size="sm" variant="secondary" onClick={() => setSharing((s) => !s)}>
               <Share2 size={16} aria-hidden="true" /> {sharing ? 'Close' : 'Share snapshot'}
@@ -331,7 +361,8 @@ export default function TrackerPage() {
           <div className={styles.bar} role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Rows done">
             <span style={{ width: `${percent}%` }} />
           </div>
-          <ProgressGrid totalRows={project.total_rows} currentRow={currentRow} plain />
+          <ProgressGrid totalRows={project.total_rows} currentRow={currentRow} plain
+            shape={shapeChoice || guessShape(project)} color={project.color_hex} onShape={chooseShape} />
           <dl className={styles.facts}>
             <div><dt>To go</dt><dd>{project.total_rows - currentRow} rows</dd></div>
             <div><dt>Working on</dt><dd>Row {workingRow}</dd></div>
@@ -374,7 +405,10 @@ export default function TrackerPage() {
 
       <FloatingCounter visible={!counterOnScreen} row={currentRow} total={project.total_rows}
         onAdd={addRow} onUndo={undoRow} />
-    </>
+
+      <ToolsDrawer open={toolsOpen && !isZenMode} onClose={() => setToolsOpen(false)}
+        projectTitle={project.title} row={currentRow} total={project.total_rows} />
+    </div>
   )
 }
 

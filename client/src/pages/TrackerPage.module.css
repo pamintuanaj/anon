@@ -72,3 +72,10 @@
   .facts div { padding: var(--space-sm); }
   .facts dd { font-size: var(--text-md); }
 }
+
+/* ---- Tools drawer split view ----
+   On wide screens the drawer is a 30rem (or 38vw) panel on the right; this
+   padding pushes the page left by the same amount so nothing hides under it. */
+.root { transition: padding-right 380ms var(--ease-out); }
+@media (min-width: 1100px) { .split { padding-right: calc(min(30rem, 38vw) + var(--space-md)); } }
+@media (prefers-reduced-motion: reduce) { .root { transition: none; } }
