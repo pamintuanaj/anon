@@ -6,13 +6,31 @@
   overflow: hidden;
   display: flex; flex-direction: column;
 }
+.coverWrap { position: relative; }
 .cover {
-  position: relative; display: grid; place-items: center;
+  position: relative; display: grid; place-items: center; overflow: hidden;
   aspect-ratio: 16 / 10;
   /* a soft wash of the yarn colour behind the drawing */
   background: color-mix(in srgb, var(--swatch) 28%, var(--color-surface));
   text-decoration: none;
 }
+.photo {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  transition: transform 600ms var(--ease-out);
+}
+.card:hover .photo { transform: scale(1.05); }
+/* progress stays visible on a photo cover: a thin bar along the bottom edge */
+.photoBar { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(255, 255, 255, 0.55); }
+.photoBar span { display: block; height: 100%; background: var(--color-primary-strong); border-radius: 0 6px 6px 0; animation: barIn 900ms var(--ease-out) both; }
+@keyframes barIn { from { width: 0 !important; } }
+.camera {
+  position: absolute; top: var(--space-sm); left: var(--space-sm);
+  display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+  border: none; cursor: pointer; background: var(--color-surface); color: var(--color-text);
+  box-shadow: 0 2px 8px rgba(74, 68, 69, 0.18);
+  transition: transform 200ms var(--ease-spring), background 150ms ease;
+}
+.camera:hover { transform: scale(1.1) rotate(-6deg); background: var(--color-primary-soft); }
 .art { width: 58%; max-width: 9rem; transition: transform 400ms var(--ease-spring); }
 .card:hover .art { transform: rotate(-8deg) scale(1.04); }
 .track { fill: none; stroke: color-mix(in srgb, var(--color-surface) 70%, transparent); stroke-width: 8; }
@@ -43,4 +61,4 @@
   transition: background 150ms ease, transform 200ms var(--ease-spring);
 }
 .delete:hover { background: var(--color-error-bg); transform: scale(1.08); }
-@media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ring, .photoBar span { animation: none; } .photo { transition: none; } }

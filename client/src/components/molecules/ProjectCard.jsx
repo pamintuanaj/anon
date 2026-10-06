@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Camera } from 'lucide-react'
+import { projectCoverSrc } from '../../api'
+import CoverDialog from './CoverDialog.jsx'
 import styles from './ProjectCard.module.css'
 
 // A drawn ball of yarn in the project's colour, with a progress ring around
@@ -24,15 +27,40 @@ function YarnProgress({ color, percent }) {
   )
 }
 
-export default function ProjectCard({ project, index = 0, onStatus, onDelete }) {
+export default function ProjectCard({ project, index = 0, onStatus, onDelete, onCover }) {
   const percent = Math.round((project.current_row / project.total_rows) * 100)
+  const coverSrc = projectCoverSrc(project)
+  // If a linked picture stops loading, fall back to the drawn yarn ball.
+  const [failedSrc, setFailedSrc] = useState(null)
+  const showPhoto = coverSrc && failedSrc !== coverSrc
+  const [editing, setEditing] = useState(false)
   return (
     <article className={`${styles.card} enter lift`} style={{ '--i': index, '--swatch': project.color_hex }}>
-      <Link to={`/workspace/${project.id}`} className={styles.cover}>
-        <YarnProgress color={project.color_hex} percent={percent} />
-        <span className={styles.percent}>{percent}%</span>
-        <span className="visually-hidden">Open {project.title} in the tracker</span>
-      </Link>
+      <div className={styles.coverWrap}>
+        <Link to={`/workspace/${project.id}`} className={`${styles.cover} ${showPhoto ? styles.hasPhoto : ''}`}>
+          {showPhoto ? (
+            <>
+              <img src={coverSrc} alt="" className={styles.photo} loading="lazy"
+                referrerPolicy="no-referrer" onError={() => setFailedSrc(coverSrc)} />
+              <span className={styles.photoBar} aria-hidden="true"><span style={{ width: `${percent}%` }} /></span>
+            </>
+          ) : (
+            <YarnProgress color={project.color_hex} percent={percent} />
+          )}
+          <span className={styles.percent}>{percent}%</span>
+          <span className="visually-hidden">Open {project.title} in the tracker</span>
+        </Link>
+        {onCover && (
+          <button type="button" className={styles.camera} onClick={() => setEditing(true)}
+            aria-label={`Change cover photo for ${project.title}`} title="Change cover photo">
+            <Camera size={16} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+      {editing && (
+        <CoverDialog project={project} current={showPhoto ? coverSrc : null}
+          onSave={(cover) => onCover(project, cover)} onClose={() => setEditing(false)} />
+      )}
       <div className={styles.body}>
         <h3 className={styles.title}><Link to={`/workspace/${project.id}`}>{project.title}</Link></h3>
         <p className={styles.meta}>Row {project.current_row} of {project.total_rows}</p>
