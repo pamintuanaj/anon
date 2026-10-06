@@ -1,0 +1,12 @@
+.layer { position: absolute; inset: 0; pointer-events: none; display: grid; place-items: center; z-index: 2; }
+.sprinkle {
+  grid-area: 1 / 1; width: 0.4rem; height: 1.15rem; border-radius: 999px;
+  animation: fling 760ms var(--ease-out) var(--delay) both;
+}
+/* rotate to the sprinkle's direction, travel outwards, then spin it in place */
+@keyframes fling {
+  from { transform: rotate(var(--a)) translateY(-30px) rotate(0deg) scale(0.3); opacity: 1; }
+  70% { opacity: 1; }
+  to { transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) rotate(var(--s)) scale(1); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .layer { display: none; } }
