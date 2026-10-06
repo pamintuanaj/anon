@@ -5,13 +5,26 @@
   display: flex; align-items: center; gap: var(--space-sm);
   background: var(--color-surface);
   border-radius: var(--radius-pill);
-  padding: 0.4rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.2rem;
+  /* drag with a finger without the page scrolling underneath it */
+  touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab;
   box-shadow: 0 16px 40px rgba(232, 143, 164, 0.35), 0 2px 8px rgba(74, 68, 69, 0.08);
   /* hidden: slid down and faded; shown: springs up into place */
   opacity: 0; transform: translateY(120%) scale(0.9); pointer-events: none;
   transition: opacity 250ms ease, transform 400ms cubic-bezier(.3, 1.5, .5, 1);
 }
 .shown { opacity: 1; transform: none; pointer-events: auto; }
+/* lifted while you hold it */
+.pill.dragging { cursor: grabbing; transform: scale(1.06) rotate(-1.5deg); transition: transform 150ms ease, opacity 250ms ease;
+  box-shadow: 0 24px 50px rgba(232, 143, 164, 0.5), 0 4px 12px rgba(74, 68, 69, 0.12); }
+
+.grip {
+  display: grid; place-items: center; width: 1.6rem; height: 2.8rem; border: none; background: none;
+  color: var(--color-muted); cursor: grab; border-radius: var(--radius-pill); padding: 0;
+}
+.grip:hover { color: var(--color-text); }
+.grip:focus-visible { outline: 3px solid var(--color-primary-strong); outline-offset: 1px; }
+.grip:disabled { cursor: grab; }
 
 .btn {
   width: 2.8rem; height: 2.8rem; border-radius: 50%; border: none; cursor: pointer;
@@ -31,4 +44,4 @@
 @media (max-width: 768px) {
   .pill { bottom: calc(var(--bottom-bar) + var(--space-md) + env(safe-area-inset-bottom, 0px)); right: var(--space-md); }
 }
-@media (prefers-reduced-motion: reduce) { .pill { transition: opacity 200ms ease; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pill, .pill.dragging { transition: opacity 200ms ease; transform: none; } }
