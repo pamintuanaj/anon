@@ -1,0 +1,44 @@
+/* One width shared with TrackerPage's .split padding, so the page squeezes by exactly the drawer's width. */
+.drawer {
+  position: fixed; z-index: 25; display: flex; flex-direction: column;
+  background: var(--color-bg); color: var(--color-text);
+  visibility: hidden;
+  /* phone and tablet: a bottom sheet */
+  left: 0; right: 0; bottom: 0; height: min(80dvh, 42rem);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 -14px 40px rgba(74, 68, 69, 0.25);
+  transform: translateY(105%);
+  transition: transform 380ms var(--ease-out), visibility 0s linear 380ms;
+}
+.open { visibility: visible; transform: none; transition: transform 380ms var(--ease-out); }
+.grab { align-self: center; width: 2.6rem; height: 0.3rem; margin-top: 0.5rem; border-radius: 99px; background: var(--color-line); flex: none; }
+.head {
+  display: flex; align-items: center; gap: var(--space-sm); flex: none;
+  padding: var(--space-sm) var(--space-md); border-bottom: 1.5px solid var(--color-line);
+}
+.titles { flex: 1; min-width: 0; }
+.title { font-size: var(--text-lg); }
+.sub { font-size: var(--text-xs); color: var(--color-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.round {
+  display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--color-surface); color: var(--color-text); text-decoration: none; flex: none;
+}
+.round:hover { background: var(--color-primary-soft); }
+.body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: var(--space-md); padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px)); }
+
+.scrim { position: fixed; inset: 0; z-index: 24; background: rgba(74, 68, 69, 0.4); opacity: 0; pointer-events: none; transition: opacity 250ms ease; }
+.scrimOn { opacity: 1; pointer-events: auto; }
+
+/* wide screens: a side panel, and no dimming (the page stays usable beside it) */
+@media (min-width: 1100px) {
+  .drawer {
+    left: auto; top: 0; right: 0; bottom: 0; height: auto; width: min(30rem, 38vw);
+    border-radius: 0; box-shadow: -18px 0 50px rgba(74, 68, 69, 0.2);
+    transform: translateX(105%);
+  }
+  .open { transform: none; }
+  .grab { display: none; }
+  .head { padding-top: var(--space-md); }
+  .scrim { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .drawer, .open, .scrim { transition: none; } }
