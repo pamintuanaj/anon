@@ -1,0 +1,32 @@
+.bar { display: grid; gap: var(--space-sm); }
+.buttons { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;
+  padding: 0.35rem 0.8rem; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line);
+  background: var(--color-surface); color: var(--color-text); font: inherit; font-size: var(--text-sm); font-weight: 700;
+  transition: background 150ms ease, transform 200ms var(--ease-spring);
+}
+.btn:hover:not(:disabled) { background: var(--color-primary-soft); transform: translateY(-1px); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+.on { background: var(--color-primary-soft); }
+.tray {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(3.2rem, 1fr)); gap: var(--space-xs);
+  background: var(--color-bg); border-radius: var(--radius-md); padding: var(--space-sm);
+  animation: tray 220ms var(--ease-out) both;
+}
+@keyframes tray { from { opacity: 0; transform: translateY(-4px); } }
+.sticker {
+  display: grid; place-items: center; padding: 0.2rem; border-radius: var(--radius-sm); border: 2px solid transparent;
+  background: var(--color-surface); cursor: pointer; transition: transform 200ms var(--ease-spring);
+}
+.sticker:hover { transform: scale(1.12) rotate(-4deg); }
+.picked { border-color: var(--color-primary-strong); }
+.chosen { display: flex; gap: var(--space-sm); flex-wrap: wrap; align-items: center; }
+.thumb { position: relative; display: inline-grid; place-items: center; background: var(--color-bg); border-radius: var(--radius-sm); padding: 0.25rem; }
+.thumb img { max-height: 5rem; max-width: 9rem; border-radius: 0.5rem; display: block; }
+.thumb button {
+  position: absolute; top: -6px; right: -6px; width: 1.4rem; height: 1.4rem; border-radius: 50%; border: none; cursor: pointer;
+  display: grid; place-items: center; background: var(--color-text); color: var(--color-surface);
+}
+.error { color: var(--color-error-text); font-weight: 700; font-size: var(--text-sm); }
+@media (prefers-reduced-motion: reduce) { .tray { animation: none; } .sticker:hover, .btn:hover { transform: none; } }
