@@ -1,7 +1,8 @@
 // comment_count is a subquery so the feed can show "3 comments" without
 // loading every comment for every post.
 const COLUMNS = `p.id, p.author, p.body, p.project_id, p.project_title, p.row_snapshot,
-  p.total_rows_snapshot, p.likes, p.saved, p.created_at,
+  p.total_rows_snapshot, p.likes, p.saved, p.created_at, p.sticker,
+  (p.image_data IS NOT NULL) AS has_image,
   (SELECT COUNT(*)::int FROM comments c WHERE c.post_id = p.id) AS comment_count`
 
 export // Returns an array of records, or an empty array if none exist.
@@ -33,26 +34,35 @@ async function getById(db, id) {
 // A plain post, or a "Share snapshot" post from the tracker. For a snapshot the
 // project's title and rows are copied from the projects table inside the same
 // statement, so the client cannot claim a row count the project never reached.
-export async function create(db, { author, body, project_id }) {
+export async function create(db, { author, body, project_id, sticker, image }) {
+  // $4..$6 are the optional sticker and picture. A picture is only ever stored
+  // after validate.js has checked its bytes.
+  const media = [sticker ?? null, image?.mime ?? null, image?.data ?? null]
   let id
   if (project_id) {
     const { rows } = await db.query(
-      `INSERT INTO posts (author, body, project_id, project_title, row_snapshot, total_rows_snapshot)
-       SELECT $1, $2, pr.id, pr.title, pr.current_row, pr.total_rows
+      `INSERT INTO posts (author, body, sticker, image_mime, image_data, project_id, project_title, row_snapshot, total_rows_snapshot)
+       SELECT $1, $2, $4, $5, $6, pr.id, pr.title, pr.current_row, pr.total_rows
          FROM projects pr WHERE pr.id = $3
        RETURNING id`,
-      [author, body, project_id]
+      [author, body, project_id, ...media]
     )
     if (!rows[0]) return null   // the project does not exist
     id = rows[0].id
   } else {
     const { rows } = await db.query(
-      'INSERT INTO posts (author, body) VALUES ($1, $2) RETURNING id',
-      [author, body]
+      'INSERT INTO posts (author, body, sticker, image_mime, image_data) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [author, body, ...media]
     )
     id = rows[0].id
   }
   return getById(db, id)
+}
+
+export async function getImage(db, id) {
+  const { rows } = await db.query(
+    'SELECT image_mime AS mime, image_data AS data FROM posts WHERE id = $1 AND image_data IS NOT NULL', [id])
+  return rows[0] ?? null
 }
 
 // likes = likes + 1 happens inside the database, so two likes at the same
