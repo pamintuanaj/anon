@@ -9,7 +9,7 @@ import { useResource } from '../hooks/useResource.js'
 import PageHeader from '../components/organisms/PageHeader.jsx'
 import Tabs from '../components/molecules/Tabs.jsx'
 import Button from '../components/atoms/Button.jsx'
-import PatternGenerator from '../components/pattern-builder/PatternGenerator.jsx'
+import PatternGenerator from '../components/pattern-builder/PatternGeneratorAI.jsx';
 import PatternBuilder from '../components/pattern-builder/PatternBuilder.jsx'
 import { Loading, ErrorMessage, Empty } from '../components/molecules/StatusMessage.jsx'
 import { emptyDesign, cleanDesign, designToText, sectionStarts } from '../utils/pattern.js'
