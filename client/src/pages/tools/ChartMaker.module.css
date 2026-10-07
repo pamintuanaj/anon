@@ -21,3 +21,18 @@
 .open span { color: var(--color-muted); font-weight: 400; font-size: 0.8rem; }
 .del { border: none; background: none; color: var(--color-muted); cursor: pointer; padding: 0 0.4rem; }
 @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } }
+
+/* ---- drawing tools row, and the narrow layout used inside the tracker drawer ---- */
+.compact { grid-template-columns: 1fr; }
+.tools { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.tool {
+  display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; font: inherit; font-size: var(--text-sm); font-weight: 700;
+  padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); border: 1.5px solid var(--color-line);
+  background: var(--color-surface); color: var(--color-text);
+  transition: background 150ms ease, transform 200ms var(--ease-spring);
+}
+.tool:hover:not(:disabled) { background: var(--color-primary-soft); transform: translateY(-1px); }
+.tool:disabled { opacity: 0.45; cursor: default; }
+.picked2 { background: var(--color-primary-strong); border-color: var(--color-primary-strong); color: var(--color-on-strong); }
+.picked2:hover:not(:disabled) { background: var(--color-primary-strong); }
+@media (prefers-reduced-motion: reduce) { .tool:hover:not(:disabled) { transform: none; } }
