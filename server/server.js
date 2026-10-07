@@ -11,6 +11,7 @@ import { router as postsRouter } from './routes/posts.js'
 import { router as commentsRouter } from './routes/comments.js'
 import { router as workspaceRouter } from './routes/workspace.js'
 import { router as chartsRouter } from './routes/charts.js'
+import { router as designsRouter } from './routes/designs.js'
 
 const app = express()
 const isProduction = process.env.NODE_ENV === 'production'
@@ -60,6 +61,14 @@ app.use(cors({ origin: allowedOrigins, credentials: true }))
 // rejected first. It is still after the password gate.
 app.use('/api', workspaceRouter)
 
+// Posts and comments can carry a small picture inside the JSON, and a pattern
+// can hold up to 1000 rows, so these routes get bigger limits. Like the
+// workspace router above, they must be mounted BEFORE the global 50 kb parser,
+// which would otherwise reject the body first.
+app.use('/api/posts', express.json({ limit: '700kb' }))
+app.use('/api/comments', express.json({ limit: '700kb' }))
+app.use('/api/designs', express.json({ limit: '400kb' }))
+
 app.use(express.json({ limit: '50kb' }))
 
 app.use('/api/projects', projectsRouter)
@@ -67,6 +76,7 @@ app.use('/api/materials', materialsRouter)
 app.use('/api/posts', postsRouter)
 app.use('/api/comments', commentsRouter)
 app.use('/api/charts', chartsRouter)
+app.use('/api/designs', designsRouter)
 app.use('/api', (req, res) => res.status(404).json({ error: 'No such route' }))
 
 // In production the built React app is served from here, on the same origin as

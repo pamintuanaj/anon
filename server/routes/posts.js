@@ -3,6 +3,7 @@ import { pool } from '../db/pool.js'
 import * as posts from '../repos/postsRepo.js'
 import * as comments from '../repos/commentsRepo.js'
 import { parseId, validatePost, validateComment } from '../validate.js'
+import { sendImage } from './sendImage.js'
 
 export const router = Router()
 
@@ -27,6 +28,12 @@ router.post('/', handle(async (req, res) => {
   const row = await posts.create(pool, value)
   if (!row) return res.status(404).json({ error: 'That project does not exist' })
   res.status(201).json(row)
+}))
+
+router.get('/:id/image', handle(async (req, res) => {
+  const file = await posts.getImage(pool, req.postId)
+  if (!file) return res.status(404).json({ error: 'No picture on this post' })
+  sendImage(res, file)
 }))
 
 router.post('/:id/like', handle(async (req, res) => {
