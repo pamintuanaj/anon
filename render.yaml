@@ -1,0 +1,24 @@
+# Render "Blueprint": one free web service that runs the API AND serves the built
+# React app from the same address, so the password box appears once and the app
+# then works. New + > Blueprint > pick this repo. Render asks for the three
+# values marked "sync: false"; they are stored on Render, never in the repo.
+services:
+  - type: web
+    name: crocheta
+    runtime: node
+    plan: free
+    # build:real turns the pretend (demo) backend OFF in the client bundle.
+    buildCommand: cd client && npm ci && npm run build:real && cd ../server && npm ci
+    startCommand: cd server && npm start
+    healthCheckPath: /healthz        # answered before the password gate, so Render can check it
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL            # the Neon connection string
+        sync: false
+      - key: APP_USER
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: ANTHROPIC_API_KEY       # optional: leave empty to use the built-in pattern generator
+        sync: false
