@@ -34,3 +34,8 @@
 
 .foot { display: flex; justify-content: space-between; gap: var(--space-sm); flex-wrap: wrap; }
 .actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+
+.photo { width: 100%; max-height: 28rem; object-fit: cover; border-radius: var(--radius-md); background: var(--color-bg); }
+.sticker { justify-self: start; display: inline-block; animation: stickerIn 500ms var(--ease-spring) both; transform-origin: 30% 80%; }
+@keyframes stickerIn { from { transform: scale(0.3) rotate(-18deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .sticker { animation: none; } }

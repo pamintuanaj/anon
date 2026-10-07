@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import Avatar from '../atoms/Avatar.jsx'
 import Button from '../atoms/Button.jsx'
 import CommentThread from '../organisms/CommentThread.jsx'
+import Sticker from '../atoms/Sticker.jsx'
+import { postImageSrc } from '../../api'
 import { Heart, ThumbsUp, MessageCircle, Trash2 } from 'lucide-react'
 import styles from './PostCard.module.css'
 
@@ -42,7 +44,12 @@ export default function PostCard({ post, index = 0, onLike, onSave, onDelete, on
       </header>
 
       {/* React escapes this text, so a post cannot inject HTML or scripts. */}
-      <p className={styles.body}>{post.body}</p>
+      {post.body && <p className={styles.body}>{post.body}</p>}
+
+      {postImageSrc(post) && (
+        <img className={styles.photo} src={postImageSrc(post)} alt={`Photo shared by ${post.author}`} loading="lazy" />
+      )}
+      {post.sticker && <span className={styles.sticker}><Sticker id={post.sticker} size={96} /></span>}
 
       {hasSnapshot && (
         <div className={styles.snapshot}>

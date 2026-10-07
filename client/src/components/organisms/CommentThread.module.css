@@ -13,3 +13,8 @@
 .name { flex: 0 0 7rem; }
 .error { color: var(--color-error-text); font-size: var(--text-sm); font-weight: 600; }
 @media (max-width: 420px) { .form { flex-wrap: wrap; } .name { flex: 1 1 100%; } }
+
+.photo { display: block; max-width: 100%; max-height: 14rem; margin-top: var(--space-xs); border-radius: var(--radius-sm); }
+.sticker { display: inline-block; margin-top: var(--space-xs); animation: stickerIn 450ms var(--ease-spring) both; }
+@keyframes stickerIn { from { transform: scale(0.3) rotate(-18deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .sticker { animation: none; } }
