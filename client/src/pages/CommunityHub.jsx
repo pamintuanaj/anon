@@ -8,6 +8,8 @@ import Tabs from '../components/molecules/Tabs.jsx'
 import PageHeader from '../components/organisms/PageHeader.jsx'
 import { SkeletonList } from '../components/atoms/Skeleton.jsx'
 import Button from '../components/atoms/Button.jsx'
+import AttachBar from '../components/molecules/AttachBar.jsx'
+import { blobToDataUrl } from '../utils/image.js'
 import { Loading, ErrorMessage, Empty } from '../components/molecules/StatusMessage.jsx'
 import styles from './Page.module.css'
 
@@ -22,23 +24,27 @@ export default function CommunityHub() {
 
   const [author, setAuthor] = useState(() => localStorage.getItem(NAME_KEY) ?? '')
   const [body, setBody] = useState('')
+  const [image, setImage] = useState(null)       // { blob, preview }
+  const [sticker, setSticker] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState(null)
   const [actionError, setActionError] = useState(null)
 
   async function handlePost(event) {
     event.preventDefault()
-    if (!author.trim() || !body.trim()) {
-      setFormError('Add your name and something to say.')
+    if (!author.trim() || (!body.trim() && !image && !sticker)) {
+      setFormError('Add your name, and some words, a photo or a sticker.')
       return
     }
     setSaving(true)
     setFormError(null)
     try {
-      const created = await createPost({ author, body })
+      const created = await createPost({ author, body, sticker, image: image ? await blobToDataUrl(image.blob) : null })
       localStorage.setItem(NAME_KEY, author.trim())
       if (view === 'all') setPosts([created, ...(posts ?? [])])
       setBody('')
+      setImage(null)
+      setSticker(null)
     } catch (caught) {
       setFormError(caught.message)
     } finally {
@@ -132,6 +138,7 @@ export default function CommunityHub() {
                 placeholder="Ask a question or share a finished row" />
               <p className={styles.counter}>{body.length} / 500</p>
             </div>
+            <AttachBar idPrefix="post" image={image} sticker={sticker} onImage={setImage} onSticker={setSticker} />
             {formError && <p className={styles.formError} role="alert">{formError}</p>}
             <Button type="submit" disabled={saving}>{saving ? 'Posting...' : 'Post'}</Button>
           </form>
