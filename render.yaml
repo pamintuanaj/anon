@@ -8,7 +8,7 @@ services:
     runtime: node
     plan: free
     # build:real turns the pretend (demo) backend OFF in the client bundle.
-    buildCommand:cd client && npm ci --include=dev && npm run build:real && cd ../server && npm ci
+    buildCommand: cd client && npm ci --include=dev && npm run build:real && cd ../server && npm ci
     startCommand: cd server && npm start
     healthCheckPath: /healthz        # answered before the password gate, so Render can check it
     envVars:
