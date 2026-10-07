@@ -152,3 +152,57 @@ export function YarnCalculator() {
     </section>
   )
 }
+
+// ---- How much yarn will the whole piece take? ------------------------------------
+// The most reliable estimate there is: measure how much yarn a swatch used,
+// then scale by area. A swatch of W x H cm that used Y metres means each cm2
+// takes Y / (W x H) metres, so a piece of w x h cm takes that times (w x h).
+// It suits flat or tube-shaped work; shaped pieces (hats, toys) are rougher.
+export function estimateYarn({ swatchW, swatchH, swatchUsed, pieceW, pieceH, spare }) {
+  const perCm2 = swatchUsed / (swatchW * swatchH)
+  const base = perCm2 * pieceW * pieceH
+  return { base, withSpare: base * (1 + spare / 100) }
+}
+
+export function YarnEstimator() {
+  const [f, setF] = useState({ swW: '10', swH: '10', how: 'm', used: '9', grams: '', ballM: '120', ballG: '50', pW: '40', pH: '150', spare: '10', unit: 'cm' })
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
+  const k = f.unit === 'in' ? 2.54 : 1
+  // The swatch can be measured in metres used, or weighed: grams x (metres per gram).
+  const used = f.how === 'm' ? num(f.used) : num(f.grams) * (num(f.ballM) / num(f.ballG))
+  const [sw, sh, pw, ph, spare] = [num(f.swW) * k, num(f.swH) * k, num(f.pW) * k, num(f.pH) * k, num(f.spare)]
+  const ok = [sw, sh, pw, ph, used].every((x) => Number.isFinite(x) && x > 0) && Number.isFinite(spare) && spare >= 0
+  const out = ok ? estimateYarn({ swatchW: sw, swatchH: sh, swatchUsed: used, pieceW: pw, pieceH: ph, spare }) : null
+  const balls = out && num(f.ballM) > 0 ? Math.ceil(out.withSpare / num(f.ballM)) : null
+  return (
+    <section className={styles.calc} aria-labelledby="est-title">
+      <h2 id="est-title">Estimate yarn for the whole project</h2>
+      <p className={styles.explain}>Crochet a swatch, note how much yarn it used, and this scales it up to the size you want. Best for flat pieces like blankets and scarves; add extra for shaped ones.</p>
+      <div className={styles.row}>
+        <div><label htmlFor="e-unit">Measuring in</label><select id="e-unit" value={f.unit} onChange={set('unit')}><option value="cm">centimetres</option><option value="in">inches</option></select></div>
+        <div><label htmlFor="e-sw">Swatch width</label><input id="e-sw" inputMode="decimal" value={f.swW} onChange={set('swW')} /></div>
+        <div><label htmlFor="e-sh">Swatch height</label><input id="e-sh" inputMode="decimal" value={f.swH} onChange={set('swH')} /></div>
+      </div>
+      <div className={styles.row}>
+        <div><label htmlFor="e-how">I know the swatch used</label><select id="e-how" value={f.how} onChange={set('how')}><option value="m">metres of yarn</option><option value="g">grams of yarn (weighed)</option></select></div>
+        {f.how === 'm'
+          ? <div><label htmlFor="e-used">Metres used</label><input id="e-used" inputMode="decimal" value={f.used} onChange={set('used')} /></div>
+          : <div><label htmlFor="e-g">Grams used</label><input id="e-g" inputMode="decimal" value={f.grams} onChange={set('grams')} /></div>}
+        <div><label htmlFor="e-bm">Ball length (m)</label><input id="e-bm" inputMode="decimal" value={f.ballM} onChange={set('ballM')} /></div>
+        <div><label htmlFor="e-bg">Ball weight (g)</label><input id="e-bg" inputMode="decimal" value={f.ballG} onChange={set('ballG')} /></div>
+      </div>
+      <div className={styles.row}>
+        <div><label htmlFor="e-pw">Finished width</label><input id="e-pw" inputMode="decimal" value={f.pW} onChange={set('pW')} /></div>
+        <div><label htmlFor="e-ph">Finished length</label><input id="e-ph" inputMode="decimal" value={f.pH} onChange={set('pH')} /></div>
+        <div><label htmlFor="e-sp">Extra, %</label><input id="e-sp" inputMode="numeric" value={f.spare} onChange={set('spare')} /></div>
+      </div>
+      {out && (
+        <div className={styles.result} aria-live="polite">
+          <span>You need about <strong>{Math.round(out.withSpare)}</strong> m ({Math.round(out.withSpare / 0.9144)} yd)</span>
+          {balls && <span>That is <strong>{balls}</strong> {balls === 1 ? 'ball' : 'balls'} of {f.ballM} m</span>}
+          <span className={styles.explain}>{Math.round(out.base)} m for the size itself, plus {f.spare}% extra for joins, ends and a different tension.</span>
+        </div>
+      )}
+    </section>
+  )
+}
