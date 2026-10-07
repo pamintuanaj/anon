@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { MessageCircleHeart, CircleDot, LayoutGrid, Archive, Wrench, Plus } from 'lucide-react'
+import { MessageCircleHeart, CircleDot, LayoutGrid, Archive, Wrench, Plus, Sparkles } from 'lucide-react'
 import Logo from '../atoms/Logo.jsx'
 import ThemeToggle from '../molecules/ThemeToggle.jsx'
 import styles from './GlobalNavigation.module.css'
@@ -8,6 +8,7 @@ export const LINKS = [
   { to: '/', label: 'Community', Icon: MessageCircleHeart, end: true },
   { to: '/workspace', label: 'Tracker', Icon: CircleDot },
   { to: '/gallery', label: 'Projects', Icon: LayoutGrid },
+  { to: '/patterns', label: 'Patterns', Icon: Sparkles },
   { to: '/inventory', label: 'Stash', Icon: Archive },
   { to: '/tools', label: 'Tools', Icon: Wrench },
 ]

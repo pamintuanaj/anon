@@ -8,6 +8,7 @@ import TrackerPicker from './pages/TrackerPicker.jsx'
 import GalleryPage from './pages/GalleryPage.jsx'
 import StashPage from './pages/StashPage.jsx'
 import ToolsPage from './pages/ToolsPage.jsx'
+import PatternsPage from './pages/PatternsPage.jsx'
 import MiniCounterPage from './pages/MiniCounterPage.jsx'
 import ThemeToggle from './components/molecules/ThemeToggle.jsx'
 import Footer from './components/organisms/Footer.jsx'
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/workspace/:id" element={<TrackerPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/inventory" element={<StashPage />} />
+            <Route path="/patterns" element={<PatternsPage />} />
             <Route path="/tools" element={<ToolsPage />} />
             <Route path="/guide" element={<Navigate to="/tools" replace />} />
             <Route path="*" element={<NotFound />} />

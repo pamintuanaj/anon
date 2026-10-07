@@ -51,7 +51,7 @@
     flex-direction: row;
   }
   .brand, .cta, .bottom { display: none; }
-  .list { grid-template-columns: repeat(5, 1fr); width: 100%; gap: 2px; }
-  .link { flex-direction: column; gap: 2px; padding: 0.45rem 0; font-size: 0.72rem; justify-content: center; }
+  .list { grid-template-columns: repeat(6, 1fr); width: 100%; gap: 2px; }
+  .link { flex-direction: column; gap: 2px; padding: 0.45rem 0; font-size: 0.68rem; justify-content: center; }
   .active::before { left: 30%; right: 30%; top: auto; bottom: -3px; width: auto; height: 3px; }
 }
