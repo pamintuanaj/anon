@@ -34,8 +34,14 @@ app.get('/readyz', async (req, res) => {
   }
 })
 
+
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+app.use(cors({ origin: allowedOrigins, credentials: true }))
+
 // The password gate. Registered before every other route and before the static
-// client, so nothing below this line can be reached without it.
 const APP_USER = process.env.APP_USER
 const APP_PASSWORD = process.env.APP_PASSWORD
 if (APP_USER && APP_PASSWORD) {
@@ -46,14 +52,6 @@ if (APP_USER && APP_PASSWORD) {
 } else {
   console.warn('APP_USER / APP_PASSWORD not set: password gate is OFF (development only).')
 }
-
-// CORS only matters if the client is served from a different origin (for
-// example Vite on :5173 in development). Named origins, never a wildcard.
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean)
-app.use(cors({ origin: allowedOrigins, credentials: true }))
 
 // The workspace router brings its own body parsers: raw bytes for pattern
 // uploads (up to 8 MB) and a 1 MB JSON limit for drawings. It is mounted
