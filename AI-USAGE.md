@@ -1,99 +1,86 @@
 # AI usage
 
-CrocheTa was built using AI as a pair-programming assistant to accelerate boilerplate setup and troubleshoot structural issues. However, the core business logic, complex state management, database query refinements, and API integration—comprising about 35-40% of the application—were written entirely by me to ensure the app met my specific requirements.
+CrocheTa was built using AI as an engineering pair-programming assistant to scaffold views, set up routes, generate initial database schemas, and troubleshoot edge cases. Approximately 65% of the codebase (initial component boilerplate, layout scaffolding, and route setups) was generated with AI assistance, while approximately 35% (core domain logic, pattern repeat math, parameter-level SQL query handling, server validation boundaries, and edge-case bug fixes) was authored, tested, and resolved directly by me.
 
-Tools: **Claude** (Anthropic, Claude Opus 5.5 on claude.ai) for scaffolding, docs, and testing.
-**Gemini** (Google) earlier, for brainstorming features and drafting initial plans.
+* **Tools:** Claude (Anthropic, Claude Opus on claude.ai) for scaffolding, components, API routes, and schema; Gemini (Google) for initial requirements analysis and design system ideation.
+
+---
 
 ## 1. How I used AI
 
-### 2026-09-26: design tokens and the app shell
-- **Tool:** Claude
-- **What I asked for:** The React shell for my four planned screens (Community, Stitch Tracker, Gallery, Stash) with routing, a nav bar, and CSS Modules using a new pastel palette.
-- **What it gave back:** `global.css` with tokens, `App.jsx` with React Router, `GlobalNavigation` component.
-- **What I kept or changed, and why:** I used the layout structure, but I manually rewrote the CSS tokens because the AI's contrast ratio for text on my pink background failed accessibility standards. I changed the primary text tokens to a deep cocoa color instead.
-- **Commit:** 6471411
+### 2026-09-26: Design tokens and app shell
+* **Tool:** Claude
+* **What I asked for:** The React shell for my four planned screens (Community, Stitch Tracker, Gallery, Stash) with routing, a nav bar, and CSS Modules using a pastel palette.
+* **What it gave back:** `global.css` with tokens, `App.jsx` with React Router, and the `GlobalNavigation` component.
+* **What I kept or changed, and why:** Kept the layout structure, but manually adjusted text tokens to `#4A4445` over `#FFF7F8` to meet WCAG AA contrast standards (9.03:1 ratio) on cream backgrounds. Button labels use `#B24F69` for a 4.98:1 contrast with white text, because pure strawberry (`#E88FA4`) failed at 2.36:1.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/6471411
 
-### 2026-09-26: the demo/real API switch
-- **Tool:** Claude
-- **What I asked for:** Replace the template's sightings API with my own data models while keeping the template's demo-mode switch.
-- **What it gave back:** `mockApi.js` and `httpApi.js` with standard CRUD function names.
-- **What I kept or changed, and why:** I kept the interface pattern, but I had to significantly alter the mock logic inside `mockApi.js` so that the browser's `localStorage` accurately simulated my complex PostgreSQL queries (like auto-completing projects when rows hit their max).
-- **Commit:** 17715f3
+### 2026-09-26: The demo/real API switch
+* **Tool:** Claude
+* **What I asked for:** Replace the template's sightings API with my own data models while keeping the template's demo-mode switch.
+* **What it gave back:** `mockApi.js` and `httpApi.js` sharing unified function signatures.
+* **What I kept or changed, and why:** Kept the interface pattern, but rewrote the mock storage in `mockApi.js` so browser `localStorage` accurately simulated relational persistence without a server.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/17715f3
 
-### 2026-09-26: the four screens and components
-- **Tool:** Claude
-- **What I asked for:** The screens from my wireframes, split into atoms, molecules, and organisms.
-- **What it gave back:** Standard React component files and a `useResource` hook for loading states.
-- **What I kept or changed, and why:** I kept the atomic design folder structure, but I had to reorder and rewrite the JSX layouts. For example, on mobile, the AI placed the counter at the bottom of the screen, but I moved it directly under the progress grid so it could be easily reached with a thumb while holding a crochet hook.
-- **Commit:** e180196
+### 2026-09-26: Core screens and atomic components
+* **Tool:** Claude
+* **What I asked for:** The screens from my wireframes, split into atoms, molecules, and organisms.
+* **What it gave back:** Component files and a `useResource` hook for loading states.
+* **What I kept or changed, and why:** Kept the atomic structure, but restructured mobile JSX layouts so the tap counter sits right under the progress grid for comfortable one-handed thumb tapping.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/e180196
 
-### 2026-09-26: database schema and queries
-- **Tool:** Claude
-- **What I asked for:** Postgres tables for my proposal's data, with safe parameterized queries.
-- **What it gave back:** `schema.sql` (projects, materials, posts), invented seed data.
-- **What I kept or changed, and why:** I used the base table creations, but I manually added `CHECK` constraints and `ON DELETE SET NULL` cascades to ensure data integrity when a user deletes a project that has community posts attached to it.
-- **Commit:** f9981df
+### 2026-09-26: Database schema and query design
+* **Tool:** Claude
+* **What I asked for:** Postgres tables for my proposal's data, with safe parameterized queries.
+* **What it gave back:** `schema.sql` (projects, materials, posts), seed data, and query functions.
+* **What I kept or changed, and why:** Added explicit CHECK constraints on `qty BETWEEN 0 AND 999`, `type IN ('yarn', 'hook', 'other')`, and `char_length(name) BETWEEN 1 AND 80`. Configured `ON DELETE SET NULL` on `posts.project_id` so community posts survive project deletion.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/f9981df
 
-### 2026-09-26: Express routes, validation and the password gate
-- **Tool:** Claude
-- **What I asked for:** REST routes for all resources and an app password gate.
-- **What it gave back:** One router per resource, `validate.js`, error handling, and `middleware/basicAuth.js`.
-- **What I kept or changed, and why:** I kept the authentication middleware, but I had to restructure the Express routes so that `/healthz` and `/readyz` stayed outside the authentication gate, otherwise my hosting provider's health checks would fail and shut down the server.
-- **Commit:** f20510e
+### 2026-09-26: Express routes, validation, and password gate
+* **Tool:** Claude
+* **What I asked for:** REST routes for all resources, input validation, and an app password gate.
+* **What it gave back:** Express routers, `server/validate.js`, and `server/middleware/basicAuth.js`.
+* **What I kept or changed, and why:** Mounted `/healthz` and `/readyz` before `basicAuth` so cloud monitoring checks succeed without credentials.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/31874e6
 
-### 2026-09-28: new palette from a reference UI kit
-- **Tool:** Claude
-- **What I asked for:** A softer, cutesy palette matching an ice cream mobile UI kit I found.
-- **What it gave back:** New tokens in `global.css`, Poppins instead of Nunito, round pink search buttons.
-- **What I kept or changed, and why:** Its first pass used a very harsh magenta. I discarded the AI's hex codes and manually pulled the softer rose colors directly from my UI kit to ensure the design felt cohesive and easy on the eyes during long crafting sessions.
-- **Commit:** 08625f9
+### 2026-10-06: Cover photo uploads and canvas downsampling
+* **Tool:** Claude
+* **What I asked for:** Modal dialog and image downsampling to strip private camera EXIF metadata before saving.
+* **What it gave back:** Canvas-based resize logic and upload modals.
+* **What I kept or changed, and why:** Kept canvas downsampling, and verified that `routes/projects.js` handles cover file uploads with an explicit 2 MB payload boundary.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/bad561c
+
+---
 
 ## 2. Where the AI got it wrong
 
-### Case 1: a huge id crashed the server with a 500
-- **What it gave me:** `parseId` accepted any positive whole number.
-- **What was wrong with it:** `GET /api/projects/99999999999` passed the check, then Postgres rejected it because `INTEGER` stops at 2147483647. The visitor got a 500 server crash instead of a proper 404 Not Found.
-- **What I did instead:** I rewrote `parseId` to explicitly reject anything above 2147483647, ensuring the route gracefully returns a 404 before the database is even touched.
-- **Commit:** 31874e6
+### Case 1: Huge IDs crashed the server with a 500 error
+* **What it gave me:** `parseId` accepted any positive integer.
+* **What was wrong with it:** Requests like `GET /api/projects/99999999999` passed client checks, but PostgreSQL threw an integer overflow on 32-bit `INTEGER` limits (`2147483647`), causing unhandled 500 crashes.
+* **What I did instead:** Rewrote `parseId` in `server/validate.js` to reject anything above `2147483647`, returning a clean 404 before querying the database.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/31874e6
 
-### Case 2: autosave accepted numbers the database cannot store
-- **What it gave me:** `validateProgress` only checked `elapsed_seconds >= 0` and `current_row >= 0`.
-- **What was wrong with it:** Sending `elapsed_seconds: 99999999999` to `PATCH /api/projects/5/progress` caused a 500 error because it exceeded the column's limits.
-- **What I did instead:** I manually added strict upper limits to the validation logic (e.g., capping rows at 1000 and seconds at the integer maximum) so it returns a clean 400 Bad Request.
-- **Commit:** 31874e6
+### Case 2: Autosave accepted numbers exceeding database limits
+* **What it gave me:** `validateProgress` only checked `elapsed_seconds >= 0` and `current_row >= 0`.
+* **What was wrong with it:** Sending large values to `PATCH /api/projects/:id/progress` triggered 500 database errors because numerical columns exceeded limits.
+* **What I did instead:** Added upper bounds to `validate.js`, capping `current_row` at 1000 and `elapsed_seconds` at the 32-bit integer maximum (`2147483647`), returning a clean 400 Bad Request.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/31874e6
 
-### Case 3: undoing the last row left the project marked Done
-- **What it gave me:** The AI's autosave query moved a project to `done` when it reached its last row, but failed to write any logic for going backwards.
-- **What was wrong with it:** If a user clicked "undo" to go from row 4 to row 3, it saved `current_row: 3, status: "done"`. An unfinished project was now permanently stuck in the Done folder.
-- **What I did instead:** I wrote a custom `CASE` statement in the SQL repository that explicitly checks if the new row count drops below the total, moving the status back to `ongoing`.
-- **Commit:** 952d558
+### Case 3: Undoing the last row left a project marked Done
+* **What it gave me:** Autosave logic moved a project to `done` once `current_row >= total_rows`, with no reverse transition.
+* **What was wrong with it:** If a user clicked undo to step back from row 50 to 49, `status` stayed marked `done`.
+* **What I did instead:** Wrote a SQL `CASE` statement in `server/repos/projectsRepo.js` (`saveProgress`) that automatically reverts the status back to `ongoing` when decremented.
+* **Commit:** https://github.com/pamintuanaj/anon/commit/952d558
+
+---
 
 ## 3. Who wrote what
 
 ### Written by me
+* **Linked Counter Modulo Repeat Logic (`client/src/utils/counters.js` - Commit `7eb37ee`):** Hand-wrote `advanceLinked`, `rewindLinked`, and `reminderIsDue` to calculate pattern repeats (e.g., cycling 1 to 6 via `(c.value % c.repeat_every) + 1`) and alert intervals.
+* **Draggable Pill Viewport Math (`client/src/hooks/useDraggablePill.js` - Commit `e180196`):** Wrote coordinate normalization (`toPixels`, `toFraction`) so the floating counter preserves relative screen positions across mobile orientation changes.
+* **Conditional Status Updates (`server/repos/projectsRepo.js` - Commit `952d558`):** Hand-crafted the SQL `CASE` expression in `saveProgress` to handle progress persistence and status reversals, while `create` handles standard project insertion.
+* **Server Input Boundaries (`server/validate.js` - Commit `31874e6`):** Enforced integer ceilings and string length checks to prevent database crashes.
 
-- **File:** `client/src/components/organisms/RowCounter.jsx`
-- **Commit:** 0351eed
-- **What it does and why it is built this way:** I wrote the core logic for the interactive crochet counters myself. AI struggles with highly specific, user-interactive logic. I manually built the increment/decrement state functions, as well as the milestone detection logic (checking if a row is a multiple of 10 to trigger the UI heart animations). 
-
-- **File:** `server/repos/projectsRepo.js`
-- **Commit:** 952d558
-- **What it does and why it is built this way:** I manually wrote and refined the SQL logic inside the `updateProgress` and `createProject` functions. I needed to ensure that a project's `status` dynamically toggles between "ongoing" and "done" based on the `current_row` versus `total_rows` comparison during a `PATCH` request. I wrote the parameterized SQL queries to securely handle these edge cases directly at the database level rather than trusting the client to send the right status.
-
-- **File:** `client/src/api/httpApi.js`
-- **Commit:** 9f6fe24
-- **What it does and why it is built this way:** The AI generated the `mockApi.js` file, but I wrote the `httpApi.js` file to handle the actual `fetch` requests to my Express server. I built out the asynchronous error handling and JSON parsing here to ensure the React client gracefully handles network failures and properly sends the base64 authentication headers.
-
-- **File:** `server/validate.js`
-- **Commit:** 31874e6
-- **What it does and why it is built this way:** I wrote the server-side validation functions to protect the database. The AI initially provided very weak checks. I rewrote the logic to enforce strict type checking, maximum string lengths for text inputs (like project titles and comments), and upper bounds on integers to completely eliminate 500 errors from bad user input.
-
-- **File:** `client/src/pages/TrackerPage.jsx`
-- **Commit:** e180196
-- **What it does and why it is built this way:** This acts as the main "brain" for the user's workspace. I wrote the layout composition and state synchronization here to ensure that the floating counter pill, the main progress grid, and the row notes all update seamlessly without causing unnecessary component re-renders across the application.
-
-### The AI-written part I understand best: `server/middleware/basicAuth.js`
-
-- **Commit:** 31874e6
-- **What it does and why we kept it:** It is the password gate on the whole app. The browser sends an `Authorization` header like `Basic dXNlcjpwYXNz`, which is `user:pass` in base64. The middleware splits off the word `Basic`, decodes the rest, and splits on the **first** colon only. It compares both halves with the `APP_USER` and `APP_PASSWORD` environment variables using `timingSafeEqual`, which takes the same time whether the first letter or the last letter is wrong, so response timing cannot leak the password. On a match it calls `next()`.
+### The AI-written part I understand best: `server/middleware/basicAuth.js` (Commit `31874e6`)
+* **How it works:** Parses the HTTP `Authorization` header, decodes base64 credentials (`user:pass`), and verifies them against `APP_USER` and `APP_PASSWORD`. It uses Node.js `crypto.timingSafeEqual` so string evaluation timing cannot leak credentials. Valid requests call `next()`, while invalid requests receive an `HTTP 401 Unauthorized` with a `WWW-Authenticate: Basic realm="CrocheTa"` header.
