@@ -60,3 +60,8 @@ cd ../client
 npm install
 cp .env.example .env   # Set VITE_USE_MOCK_API=false, VITE_API_BASE_URL=http://localhost:3000
 npm run dev            # Runs on http://localhost:5173
+AI Use
+This project was built with help from Claude (Anthropic), which generated most boilerplate code and initial routing templates. Domain logic, modulo repeat algorithms, database integrity constraints, and bug fixes were authored by me. Full records and commit citations are in AI-USAGE.md.
+
+Licence
+MIT · AJ Pamintuan · 6APSI Final Project 2026
