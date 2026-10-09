@@ -2,15 +2,20 @@
 
 *Mag-crochet tamu! Every stitch made cozy.* ("Crochet tamu" is Kapampangan for "let's crochet".)
 
-![Built with AI: Claude](https://img.shields.io/badge/built%20with%20AI-Claude-FF8EAF)
-
 CrocheTa is a crochet companion. It counts the row and stitch you are on with as many
 extra counters as a project needs, shows your pattern with highlighters that follow your
 place, keeps track of the yarn and hooks you own, and lets you share milestones with other
 crocheters. Light and dark mode included.
 
-**Live app:** https://pamintuanaj.github.io/anon/
-**Demo (GitHub Pages, demo mode):** https://pamintuanaj.github.io/anon/
+### Deployment Links
+
+- **Live Full-Stack App (Render):** https://crocheta.onrender.com
+  - **Username:** `grader`
+  - **Password:** `crocheta2026`
+  *(Full-stack app backed by Express and live PostgreSQL)*
+
+- **Frontend Demo (GitHub Pages):** https://pamintuanaj.github.io/anon
+  *(Client demo running mock API)*
 ## Presentation
 - **Video (public Google Drive link):** https://drive.google.com/drive/folders/1zZ5TEW-Q_FGQT6mvFcf-1ja3KeJO7PJN?usp=sharing
 - **Slides (link or PDF):** https://drive.google.com/drive/folders/1zZ5TEW-Q_FGQT6mvFcf-1ja3KeJO7PJN?usp=sharing
