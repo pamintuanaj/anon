@@ -1,6 +1,6 @@
 # AI usage
 
-CrocheTa was built using AI as an engineering pair-programming assistant to scaffold views, set up routes, generate initial database schemas, and troubleshoot edge cases. Approximately 65% of the codebase (initial component boilerplate, layout scaffolding, and route setups) was generated with AI assistance, while approximately 35% (core domain logic, pattern repeat math, parameter-level SQL query handling, server validation boundaries, and edge-case bug fixes) was authored, tested, and resolved directly by me.
+CrocheTa was built using AI as an engineering pair-programming assistant to scaffold views, set up routes, generate initial database schemas, and troubleshoot edge cases. By my estimate, roughly two thirds of the raw line count (initial component boilerplate, layout scaffolding, CSS and route setups) started as AI output, which I then reviewed and tested. The core logic named in section 3 (pattern repeat math, the mock-database persistence, the progress SQL, the server validation limits and the draggable counter math) I wrote or rewrote myself, and the bug fixes in section 2 are mine. These percentages are estimates, not line counts.
 
 * **Tools:** Claude (Anthropic, Claude Opus on claude.ai) for scaffolding, components, API routes, and schema; Gemini (Google) for initial requirements analysis and design system ideation.
 
@@ -8,42 +8,42 @@ CrocheTa was built using AI as an engineering pair-programming assistant to scaf
 
 ## 1. How I used AI
 
-### 2026-09-26: Design tokens and app shell
+### 2026-10-04: Design tokens and app shell
 * **Tool:** Claude
 * **What I asked for:** The React shell for my four planned screens (Community, Stitch Tracker, Gallery, Stash) with routing, a nav bar, and CSS Modules using a pastel palette.
 * **What it gave back:** `global.css` with tokens, `App.jsx` with React Router, and the `GlobalNavigation` component.
 * **What I kept or changed, and why:** Kept the layout structure, but manually adjusted text tokens to `#4A4445` over `#FFF7F8` to meet WCAG AA contrast standards (9.03:1 ratio) on cream backgrounds. Button labels use `#B24F69` for a 4.98:1 contrast with white text, because pure strawberry (`#E88FA4`) failed at 2.36:1.
-* **Commit:** https://github.com/pamintuanaj/anon/commit/6471411
+* **Commit:** https://github.com/pamintuanaj/anon/commit/08625f9
 
-### 2026-09-26: The demo/real API switch
+### 2026-10-04: The demo/real API switch
 * **Tool:** Claude
 * **What I asked for:** Replace the template's sightings API with my own data models while keeping the template's demo-mode switch.
 * **What it gave back:** `mockApi.js` and `httpApi.js` sharing unified function signatures.
 * **What I kept or changed, and why:** Kept the interface pattern, but rewrote the mock storage in `mockApi.js` so browser `localStorage` accurately simulated relational persistence without a server.
 * **Commit:** https://github.com/pamintuanaj/anon/commit/17715f3
 
-### 2026-09-26: Core screens and atomic components
+### 2026-10-04: Core screens and atomic components
 * **Tool:** Claude
 * **What I asked for:** The screens from my wireframes, split into atoms, molecules, and organisms.
 * **What it gave back:** Component files and a `useResource` hook for loading states.
 * **What I kept or changed, and why:** Kept the atomic structure, but restructured mobile JSX layouts so the tap counter sits right under the progress grid for comfortable one-handed thumb tapping.
 * **Commit:** https://github.com/pamintuanaj/anon/commit/e180196
 
-### 2026-09-26: Database schema and query design
+### 2026-10-04: Database schema and query design
 * **Tool:** Claude
 * **What I asked for:** Postgres tables for my proposal's data, with safe parameterized queries.
 * **What it gave back:** `schema.sql` (projects, materials, posts), seed data, and query functions.
 * **What I kept or changed, and why:** Added explicit CHECK constraints on `qty BETWEEN 0 AND 999`, `type IN ('yarn', 'hook', 'other')`, and `char_length(name) BETWEEN 1 AND 80`. Configured `ON DELETE SET NULL` on `posts.project_id` so community posts survive project deletion.
 * **Commit:** https://github.com/pamintuanaj/anon/commit/f9981df
 
-### 2026-09-26: Express routes, validation, and password gate
+### 2026-10-04: Express routes, validation, and password gate
 * **Tool:** Claude
 * **What I asked for:** REST routes for all resources, input validation, and an app password gate.
 * **What it gave back:** Express routers, `server/validate.js`, and `server/middleware/basicAuth.js`.
 * **What I kept or changed, and why:** Mounted `/healthz` and `/readyz` before `basicAuth` so cloud monitoring checks succeed without credentials.
 * **Commit:** https://github.com/pamintuanaj/anon/commit/31874e6
 
-### 2026-10-06: Cover photo uploads and canvas downsampling
+### 2026-10-07: Cover photo uploads and canvas downsampling
 * **Tool:** Claude
 * **What I asked for:** Modal dialog and image downsampling to strip private camera EXIF metadata before saving.
 * **What it gave back:** Canvas-based resize logic and upload modals.
@@ -77,8 +77,9 @@ CrocheTa was built using AI as an engineering pair-programming assistant to scaf
 ## 3. Who wrote what
 
 ### Written by me
+* **Client-Side Relational Mock Persistence (`client/src/api/mockApi.js` - Commit `17715f3`):** I rewrote the AI's initial mock storage so browser `localStorage` behaves like the database: deleting a project removes its workspace rows (like `ON DELETE CASCADE`) and unlinks community posts (like `ON DELETE SET NULL`), so the demo works without an Express backend.
 * **Linked Counter Modulo Repeat Logic (`client/src/utils/counters.js` - Commit `7eb37ee`):** Hand-wrote `advanceLinked`, `rewindLinked`, and `reminderIsDue` to calculate pattern repeats (e.g., cycling 1 to 6 via `(c.value % c.repeat_every) + 1`) and alert intervals.
-* **Draggable Pill Viewport Math (`client/src/hooks/useDraggablePill.js` - Commit `e180196`):** Wrote coordinate normalization (`toPixels`, `toFraction`) so the floating counter preserves relative screen positions across mobile orientation changes.
+* **Draggable Pill Viewport Math (`client/src/hooks/useDraggablePill.js` - Commit `aaabda8`):** Wrote coordinate normalization (`toPixels`, `toFraction`) so the floating counter preserves relative screen positions across mobile orientation changes.
 * **Conditional Status Updates (`server/repos/projectsRepo.js` - Commit `952d558`):** Hand-crafted the SQL `CASE` expression in `saveProgress` to handle progress persistence and status reversals, while `create` handles standard project insertion.
 * **Server Input Boundaries (`server/validate.js` - Commit `31874e6`):** Enforced integer ceilings and string length checks to prevent database crashes.
 
